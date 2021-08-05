@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.example.org/bashDocSchema/"
+	targetNamespace="http://www.example.org/bashDocSchema/">
+	<element name="Library">
+		<complexType>
+			<sequence>
+				<element name="Files" type="tns:FileData"
+					maxOccurs="unbounded" minOccurs="0" />
+			</sequence>
+			<attribute name="Created" type="date" />
+		</complexType>
+	</element>
+	<complexType name="CommonCommentData">
+		<sequence>
+			<element name="Comment" type="string" maxOccurs="1"
+				minOccurs="0" />
+		</sequence>
+		<attribute name="Author" type="string" />
+		<attribute name="AuthorEmail" type="string" />
+	</complexType>
+
+	<complexType name="VersionHistoryData">
+		<complexContent>
+			<extension base="tns:CommonCommentData">
+				<attribute name="Version" type="string" />
+				<attribute name="Release" type="string" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="FileData">
+		<complexContent>
+			<extension base="tns:CommonCommentData">
+				<sequence>
+					<element name="VersionHistory"
+						type="tns:VersionHistoryData" maxOccurs="unbounded" minOccurs="0" />
+
+					<element name="Variable" type="tns:VariableData"
+						maxOccurs="unbounded" minOccurs="0" />
+				</sequence>
+				<attribute name="FileName" type="string" />
+				<attribute name="Version" type="string" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="VariableData">
+		<complexContent>
+			<extension base="tns:ComponentCommentData"></extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="ComponentCommentData">
+		<complexContent>
+			<extension base="tns:CommonCommentData">
+				<attribute name="Scope" type="tns:ScopeType" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<simpleType name="ScopeType">
+		<restriction base="string">
+			<enumeration value="PUBLIC" />
+			<enumeration value="PROTECTED" />
+			<enumeration value="PRIVATE" />
+		</restriction>
+	</simpleType>
+</schema>
