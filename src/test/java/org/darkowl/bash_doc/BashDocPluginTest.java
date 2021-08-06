@@ -17,8 +17,8 @@ public class BashDocPluginTest {
     @Test
     public void testExecute() throws Exception {
         final BashDocPlugin plugin = new BashDocPlugin();
-        plugin.setSrcDirectory(Paths.get("target/classes/bash"));
-        final Path output = Paths.get("target/classes/output");
+        plugin.setSrcDirectory(Paths.get("target/bash"));
+        final Path output = Paths.get("target/testOutput");
         plugin.setOutputDirectory(output);
         plugin.execute();
         final Library lib = plugin.getLibrary();
@@ -44,8 +44,8 @@ public class BashDocPluginTest {
             assertTrue(e.getMessage().endsWith(" does not exist"));
         }
         assertTrue(hasError);
-        plugin.setSrcDirectory(Paths.get("target/classes/bash"));
-        final Path output = Paths.get("target/classes/output");
+        plugin.setSrcDirectory(Paths.get("target/bash"));
+        final Path output = Paths.get("target/testOutput");
         plugin.setOutputDirectory(output);
         assertFalse(Files.exists(output));
         plugin.execute();

@@ -1,12 +1,14 @@
 package org.darkowl.bash_doc.builders;
 
 import java.io.IOException;
+import java.io.ObjectInputValidation;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Stack;
 
+import org.darkowl.bash_doc.builders.FileDataBuilder.CommentStack;
 import org.darkowl.bash_doc.enums.LineTags;
 import org.darkowl.bash_doc.model.CommonCommentData;
 import org.darkowl.bash_doc.model.ComponentCommentData;
@@ -102,15 +104,16 @@ public class FileDataBuilder {
                 processComment(commentStack.peek(), data);
                 break;
             case CODE:
+                process(commentStack, data);
                 break;
             case PUBLIC:
-                processPublic(commentStack.peek(), ScopeType.PUBLIC);
+                process(commentStack.peek(), ScopeType.PUBLIC);
                 break;
             case PRIVATE:
-                processPublic(commentStack.peek(), ScopeType.PRIVATE);
+                process(commentStack.peek(), ScopeType.PRIVATE);
                 break;
             case PROTECTED:
-                processPublic(commentStack.peek(), ScopeType.PROTECTED);
+                process(commentStack.peek(), ScopeType.PROTECTED);
                 break;
             default:
                 break;
@@ -118,6 +121,34 @@ public class FileDataBuilder {
             }
         }
         return output;
+    }
+
+    private static void process(final CommentStack commentStack, String data) {
+        if (commentStack == null || data == null || data.isBlank())
+            return;
+        StackObj<?> obj = commentStack.peek();
+        if (obj == null)
+            return;
+        switch (obj.getType()) {
+        case VARIABLE:
+            if (!(obj.getData() instanceof VariableData)) {
+                System.out.println("Data type is not Variable and should be...");
+                return;
+            }
+            process((VariableData) obj.getData(), data);
+            break;
+        default:
+            break;
+        }
+    }
+
+    private static void process(VariableData output, String data) {
+        if (data == null || data.isBlank() || output == null)
+            return;
+        String[] array = data.split("=");
+        output.setName(array[0]);
+        if (array.length > 1)
+            output.setDefault(array[1]);
     }
 
     private static void popStack(final Stack<StackObj<?>> stack, final LineTags lineType) {
@@ -194,6 +225,7 @@ public class FileDataBuilder {
             data.setComment(buildComment(data.getComment(), " - " + comment));
             break;
         }
+        case VARIABLE:
         case FILE: {
             final CommonCommentData data = (CommonCommentData) obj.getData();
             data.setComment(buildComment(data.getComment(), comment));
@@ -244,7 +276,7 @@ public class FileDataBuilder {
 
     }
 
-    private static void processPublic(final StackObj<?> obj, final ScopeType data) {
+    private static void process(final StackObj<?> obj, final ScopeType data) {
         if (obj == null)
             return;
         switch (obj.getType()) {

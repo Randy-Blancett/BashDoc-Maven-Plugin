@@ -29,4 +29,4 @@ VAR2=2
 #VARIABLE
 #PROTECTED
 # Protected Variable
-VAR3=3
+VAR3

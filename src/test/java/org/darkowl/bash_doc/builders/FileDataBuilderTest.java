@@ -1,6 +1,7 @@
 package org.darkowl.bash_doc.builders;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -20,7 +21,7 @@ class FileDataBuilderTest {
 
     @Test
     void testCreate() throws IOException {
-        final FileData data = FileDataBuilder.create(Paths.get("target/classes/bash/Test1.sh"));
+        final FileData data = FileDataBuilder.create(Paths.get("target/bash/Test1.sh"));
 
         assertEquals("Test1.sh", data.getFileName());
         assertEquals("File Comment1\nFile Comment2", data.getComment());
@@ -40,9 +41,23 @@ class FileDataBuilderTest {
         assertEquals("12Dec2021", history.getRelease());
 
         assertEquals(3, data.getVariable().size());
-        final VariableData variable = data.getVariable().get(0);
+        VariableData variable = data.getVariable().get(0);
         assertEquals(ScopeType.PRIVATE, variable.getScope());
-        System.out.println(variable);
+        assertEquals("Private Variable", variable.getComment());
+        assertEquals("VAR1", variable.getName());
+        assertEquals("1", variable.getDefault());
+
+        variable = data.getVariable().get(1);
+        assertEquals(ScopeType.PUBLIC, variable.getScope());
+        assertEquals("Public Variable", variable.getComment());
+        assertEquals("VAR2", variable.getName());
+        assertEquals("2", variable.getDefault());
+
+        variable = data.getVariable().get(2);
+        assertEquals(ScopeType.PROTECTED, variable.getScope());
+        assertEquals("Protected Variable", variable.getComment());
+        assertEquals("VAR3", variable.getName());
+        assertNull(variable.getDefault());
     }
 
     @Test

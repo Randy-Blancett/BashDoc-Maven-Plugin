@@ -47,7 +47,10 @@
 
 	<complexType name="VariableData">
 		<complexContent>
-			<extension base="tns:ComponentCommentData"></extension>
+			<extension base="tns:ComponentCommentData">
+				<attribute name="default" type="string"></attribute>
+				<attribute name="type" type="tns:VariableType"></attribute>
+			</extension>
 		</complexContent>
 	</complexType>
 
@@ -55,6 +58,7 @@
 		<complexContent>
 			<extension base="tns:CommonCommentData">
 				<attribute name="Scope" type="tns:ScopeType" />
+				<attribute name="Name" type="string"></attribute>
 			</extension>
 		</complexContent>
 	</complexType>
@@ -64,6 +68,15 @@
 			<enumeration value="PUBLIC" />
 			<enumeration value="PROTECTED" />
 			<enumeration value="PRIVATE" />
+		</restriction>
+	</simpleType>
+
+	<simpleType name="VariableType">
+		<restriction base="string">
+			<enumeration value="INTEGER" />
+			<enumeration value="STRING" />
+			<enumeration value="ARRAY" />
+			<enumeration value="GENERAL" />
 		</restriction>
 	</simpleType>
 </schema>

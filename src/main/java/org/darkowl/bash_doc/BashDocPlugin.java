@@ -36,7 +36,7 @@ public class BashDocPlugin extends AbstractMojo {
     private boolean outputText;
 
     Path srcDirectory = null;
-    @Parameter(defaultValue = "${project.build.outputDirectory}", property = "sourceDir", required = true)
+    @Parameter(defaultValue = "${project.build.directory}/bash", property = "sourceDir", required = true)
     private String srcDirectoryStr;
 
     @Override
