@@ -8,7 +8,7 @@ public enum LineTags {
     VERSION("VERSION ", MatchTypes.START, 2), VERSIONS("VERSIONS", MatchTypes.EQ, 2);
 
     public static LineTags parse(final String line) {
-        if (!line.startsWith("#"))
+        if (!line.trim().startsWith("#"))
             return CODE;
 
         final String check = line.trim().replaceAll("^#", "").trim();

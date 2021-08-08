@@ -45,6 +45,8 @@ class FileDataBuilderTest {
         assertEquals(ScopeType.PRIVATE, variable.getScope());
         assertEquals("Private Variable", variable.getComment());
         assertEquals("VAR1", variable.getName());
+        assertEquals("Randy Blancett", variable.getAuthor());
+        assertEquals("Randy.Blancett@gmail.com", variable.getAuthorEmail());
         assertEquals("1", variable.getDefault());
 
         variable = data.getVariable().get(1);

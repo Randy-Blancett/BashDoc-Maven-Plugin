@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.maven.plugin.logging.Log;
 import org.darkowl.bash_doc.model.CommonCommentData;
 import org.darkowl.bash_doc.model.Library;
+import org.darkowl.bash_doc.model.VariableData;
 import org.darkowl.bash_doc.model.VersionHistoryData;
 
 public class BashDocTextOutput {
@@ -97,7 +98,7 @@ public class BashDocTextOutput {
 
     private void process(final Library library) {
         log.info("Processing Text Output...");
-        String createdString = dateFormater.format(library.getCreated());
+        final String createdString = library.getCreated() == null ? "" : dateFormater.format(library.getCreated());
         library.getFiles().forEach(file -> {
             if (file == null)
                 return;
@@ -105,10 +106,28 @@ public class BashDocTextOutput {
             final StringBuilder sb = new StringBuilder();
             addHeader(sb, 0, file.getFileName() + " (" + file.getVersion() + ")", createdString);
             process(sb, 0, (CommonCommentData) file);
-
             process(sb, 1, file.getVersionHistory());
+            processVariables(sb, 1, file.getVariable());
             writeFileData(file.getFileName(), sb.toString().getBytes());
         });
+    }
+
+    private void process(final StringBuilder output, final int index, final VariableData data) {
+        if (data == null)
+            return;
+        addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
+        process(output, index, (CommonCommentData) data);
+        output.append(createPropertyOutput(index, "Default Value", data.getDefault()));
+    }
+
+    private void processVariables(StringBuilder sb, int index, List<VariableData> variables) {
+        if (variables == null || variables.isEmpty())
+            return;
+        addHeader(sb, index, "Variables", null);
+        variables.forEach(var -> {
+            process(sb, index + 1, var);
+        });
+
     }
 
     private void process(StringBuilder output, int index, List<VersionHistoryData> versionHistory) {

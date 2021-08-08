@@ -18,6 +18,8 @@
 
 #VARIABLE
 #PRIVATE
+#AUTHOR Randy Blancett
+#AUTHOR_EMAIL Randy.Blancett@gmail.com
 # Private Variable
 VAR1=1
 

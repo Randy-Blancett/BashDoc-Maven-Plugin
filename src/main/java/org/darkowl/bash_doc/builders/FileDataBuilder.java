@@ -136,6 +136,7 @@ public class FileDataBuilder {
                 return;
             }
             process((VariableData) obj.getData(), data);
+            commentStack.pop();
             break;
         default:
             break;
@@ -170,6 +171,7 @@ public class FileDataBuilder {
             break;
         case COMMENT:
             break;
+        case VARIABLE:
         case HISTORIC_VERSION:
         case FILE:
             ((CommonCommentData) obj.getData()).setAuthor(data);
@@ -195,6 +197,7 @@ public class FileDataBuilder {
             break;
         case COMMENT:
             break;
+        case VARIABLE:
         case HISTORIC_VERSION:
         case FILE:
             ((CommonCommentData) obj.getData()).setAuthorEmail(data);
@@ -202,6 +205,14 @@ public class FileDataBuilder {
         case VERSION:
             break;
         case VERSIONS:
+            break;
+        case PRIVATE:
+            break;
+        case PROTECTED:
+            break;
+        case PUBLIC:
+            break;
+        case RELEASE:
             break;
         default:
             break;
