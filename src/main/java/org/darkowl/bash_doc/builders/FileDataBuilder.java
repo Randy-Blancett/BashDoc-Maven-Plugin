@@ -1,14 +1,12 @@
 package org.darkowl.bash_doc.builders;
 
 import java.io.IOException;
-import java.io.ObjectInputValidation;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Stack;
 
-import org.darkowl.bash_doc.builders.FileDataBuilder.CommentStack;
 import org.darkowl.bash_doc.enums.LineTags;
 import org.darkowl.bash_doc.model.CommonCommentData;
 import org.darkowl.bash_doc.model.ComponentCommentData;
@@ -123,10 +121,17 @@ public class FileDataBuilder {
         return output;
     }
 
-    private static void process(final CommentStack commentStack, String data) {
+    private static void popStack(final Stack<StackObj<?>> stack, final LineTags lineType) {
+        if (stack == null || lineType == null)
+            return;
+        while (lineType.getLevel() <= stack.size())
+            stack.pop();
+    }
+
+    private static void process(final CommentStack commentStack, final String data) {
         if (commentStack == null || data == null || data.isBlank())
             return;
-        StackObj<?> obj = commentStack.peek();
+        final StackObj<?> obj = commentStack.peek();
         if (obj == null)
             return;
         switch (obj.getType()) {
@@ -143,20 +148,24 @@ public class FileDataBuilder {
         }
     }
 
-    private static void process(VariableData output, String data) {
+    private static void process(final StackObj<?> obj, final ScopeType data) {
+        if (obj == null)
+            return;
+        switch (obj.getType()) {
+        case VARIABLE:
+            ((ComponentCommentData) obj.getData()).setScope(data);
+            break;
+        }
+
+    }
+
+    private static void process(final VariableData output, final String data) {
         if (data == null || data.isBlank() || output == null)
             return;
-        String[] array = data.split("=");
+        final String[] array = data.split("=");
         output.setName(array[0]);
         if (array.length > 1)
             output.setDefault(array[1]);
-    }
-
-    private static void popStack(final Stack<StackObj<?>> stack, final LineTags lineType) {
-        if (stack == null || lineType == null)
-            return;
-        while (lineType.getLevel() <= stack.size())
-            stack.pop();
     }
 
     private static void processAuthor(final StackObj<?> obj, final String data) {
@@ -282,17 +291,6 @@ public class FileDataBuilder {
         case VERSION:
             break;
         default:
-            break;
-        }
-
-    }
-
-    private static void process(final StackObj<?> obj, final ScopeType data) {
-        if (obj == null)
-            return;
-        switch (obj.getType()) {
-        case VARIABLE:
-            ((ComponentCommentData) obj.getData()).setScope(data);
             break;
         }
 

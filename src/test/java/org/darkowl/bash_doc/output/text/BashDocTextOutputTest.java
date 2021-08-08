@@ -17,7 +17,7 @@ class BashDocTextOutputTest {
 
     @Test
     void test() throws IOException {
-        Library lib = new Library();
+        final Library lib = new Library();
         final FileData data = FileDataBuilder.create(Paths.get("target/bash/Test1.sh"));
         lib.getFiles().add(data);
         final Path outputDirectory = Paths.get("target/testOutput/doc");

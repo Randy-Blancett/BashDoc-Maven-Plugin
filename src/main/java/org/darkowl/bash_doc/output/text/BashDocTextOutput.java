@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
@@ -13,10 +14,11 @@ import org.darkowl.bash_doc.model.VariableData;
 import org.darkowl.bash_doc.model.VersionHistoryData;
 
 public class BashDocTextOutput {
-    public static final int LINE_WIDTH = 80;
     private static final DateFormat dateFormater = DateFormat.getDateTimeInstance();
+    public static final int LINE_WIDTH = 80;
+    private static final VariableTextSort VAR_SORTER = new VariableTextSort();
 
-    private static void addHeader(final StringBuilder sb, final int indent, final String text, String tailText) {
+    private static void addHeader(final StringBuilder sb, final int indent, final String text, final String tailText) {
         sb.append(createHeaderLine(indent));
         sb.append(createHeaderData(indent, text, tailText));
         sb.append(createHeaderLine(indent));
@@ -38,7 +40,7 @@ public class BashDocTextOutput {
         return output.toString();
     }
 
-    private static String createHeaderData(final int indent, final String text, String tailText) {
+    private static String createHeaderData(final int indent, final String text, final String tailText) {
         final StringBuilder output = new StringBuilder();
         indentLine(output, indent);
         output.append("* " + text);
@@ -105,11 +107,32 @@ public class BashDocTextOutput {
             log.debug("Processing file: " + file.getFileName());
             final StringBuilder sb = new StringBuilder();
             addHeader(sb, 0, file.getFileName() + " (" + file.getVersion() + ")", createdString);
-            process(sb, 0, (CommonCommentData) file);
+            process(sb, 0, file);
             process(sb, 1, file.getVersionHistory());
             processVariables(sb, 1, file.getVariable());
             writeFileData(file.getFileName(), sb.toString().getBytes());
         });
+    }
+
+    private void process(final StringBuilder output, final int index, final CommonCommentData commentData) {
+        if (commentData == null)
+            return;
+        output.append(createCommentBlock(index, commentData.getComment()))
+                .append(createPropertyOutput(index, "Author", commentData.getAuthor()))
+                .append(createPropertyOutput(index, "Author Email", commentData.getAuthorEmail()));
+    }
+
+    private void process(final StringBuilder output, final int index, final List<VersionHistoryData> versionHistory) {
+        if (versionHistory == null)
+            return;
+        addHeader(output, index, "Version History", null);
+        versionHistory.forEach(version -> {
+            if (version == null)
+                return;
+            addHeader(output, index + 1, version.getVersion(), version.getRelease());
+            process(output, index + 1, version);
+        });
+
     }
 
     private void process(final StringBuilder output, final int index, final VariableData data) {
@@ -120,35 +143,15 @@ public class BashDocTextOutput {
         output.append(createPropertyOutput(index, "Default Value", data.getDefault()));
     }
 
-    private void processVariables(StringBuilder sb, int index, List<VariableData> variables) {
+    private void processVariables(final StringBuilder sb, final int index, final List<VariableData> variables) {
         if (variables == null || variables.isEmpty())
             return;
         addHeader(sb, index, "Variables", null);
+        Collections.sort(variables, VAR_SORTER);
         variables.forEach(var -> {
             process(sb, index + 1, var);
         });
 
-    }
-
-    private void process(StringBuilder output, int index, List<VersionHistoryData> versionHistory) {
-        if (versionHistory == null)
-            return;
-        addHeader(output, index, "Version History", null);
-        versionHistory.forEach(version -> {
-            if (version == null)
-                return;
-            addHeader(output, index + 1, version.getVersion(), version.getRelease());
-            process(output, index + 1, (CommonCommentData) version);
-        });
-
-    }
-
-    private void process(final StringBuilder output, final int index, final CommonCommentData commentData) {
-        if (commentData == null)
-            return;
-        output.append(createCommentBlock(index, commentData.getComment()))
-                .append(createPropertyOutput(index, "Author", commentData.getAuthor()))
-                .append(createPropertyOutput(index, "Author Email", commentData.getAuthorEmail()));
     }
 
     private void writeFileData(final String fileName, final byte[] content) {

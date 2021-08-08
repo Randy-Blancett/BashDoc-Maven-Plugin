@@ -8,12 +8,12 @@ import javax.xml.bind.DatatypeConverter;
 
 public class DateAdapter {
 
-    public static Date parseDate(String s) {
+    public static Date parseDate(final String s) {
         return DatatypeConverter.parseDate(s).getTime();
     }
 
-    public static String printDate(Date dt) {
-        Calendar cal = new GregorianCalendar();
+    public static String printDate(final Date dt) {
+        final Calendar cal = new GregorianCalendar();
         cal.setTime(dt);
         return DatatypeConverter.printDate(cal);
     }
