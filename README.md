@@ -68,6 +68,8 @@ This is the email of the author of the file
 
 ### FILE
 indicates that the comment is for the file as a whole
+### METHOD
+Indicates that the code block is for a method
 ### PRIVATE
 Indicates that the code section was intended to be private
 ### PROTECTED

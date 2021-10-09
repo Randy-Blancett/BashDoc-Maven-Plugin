@@ -12,6 +12,8 @@ import java.util.Stack;
 import org.darkowl.bash_doc.builders.FileDataBuilder.StackObj;
 import org.darkowl.bash_doc.enums.LineTags;
 import org.darkowl.bash_doc.model.FileData;
+import org.darkowl.bash_doc.model.MethodData;
+import org.darkowl.bash_doc.model.ParameterData;
 import org.darkowl.bash_doc.model.ScopeType;
 import org.darkowl.bash_doc.model.VariableData;
 import org.darkowl.bash_doc.model.VersionHistoryData;
@@ -40,7 +42,7 @@ class FileDataBuilderTest {
         assertEquals(" - Things", history.getComment());
         assertEquals("12Dec2021", history.getRelease());
 
-        assertEquals(3, data.getVariable().size());
+        assertEquals(4, data.getVariable().size());
         VariableData variable = data.getVariable().get(0);
         assertEquals(ScopeType.PRIVATE, variable.getScope());
         assertEquals("Private Variable", variable.getComment());
@@ -60,6 +62,24 @@ class FileDataBuilderTest {
         assertEquals("Protected Variable", variable.getComment());
         assertEquals("VAR3", variable.getName());
         assertNull(variable.getDefault());
+
+        variable = data.getVariable().get(3);
+        assertEquals(ScopeType.PROTECTED, variable.getScope());
+        assertEquals("Protected Variable", variable.getComment());
+        assertEquals("VAR4", variable.getName());
+        assertNull(variable.getDefault());
+
+        MethodData method = data.getMethod().get(0);
+        assertEquals(ScopeType.PUBLIC, method.getScope());
+        assertEquals("The Description", method.getComment());
+        List<ParameterData> parameters = method.getParameter();
+        assertEquals(2, parameters.size());
+        assertEquals(1, parameters.get(0).getPosition());
+        assertEquals("Flag", parameters.get(0).getName());
+        assertEquals("Flag Desciption", parameters.get(0).getDescrtiption());
+        assertEquals(2, parameters.get(1).getPosition());
+        assertEquals("Long Command", parameters.get(1).getName());
+        assertEquals("Long Command Description", parameters.get(1).getDescrtiption());
     }
 
     @Test

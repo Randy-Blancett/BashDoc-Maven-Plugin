@@ -32,3 +32,23 @@ VAR2=2
 #PROTECTED
 # Protected Variable
 VAR3
+
+#VARIABLE
+#PROTECTED
+# Protected Variable
+VAR4=()
+
+#METHOD
+#PUBLIC
+# The Description
+#
+#AUTHOR Randy Blancett
+#AUTHOR_EMAIL Randy.Blancett@gmail.com
+#
+#PARAMETERS
+# $1 | Flag | Flag Desciption
+# $2 | Long Command | Long Command Description
+#
+#EXAMPLES
+# Example 1
+# Example 2

@@ -7,10 +7,14 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Stack;
 
+import javax.print.attribute.standard.PrinterMakeAndModel;
+
 import org.darkowl.bash_doc.enums.LineTags;
 import org.darkowl.bash_doc.model.CommonCommentData;
 import org.darkowl.bash_doc.model.ComponentCommentData;
 import org.darkowl.bash_doc.model.FileData;
+import org.darkowl.bash_doc.model.MethodData;
+import org.darkowl.bash_doc.model.ParameterData;
 import org.darkowl.bash_doc.model.ScopeType;
 import org.darkowl.bash_doc.model.VariableData;
 import org.darkowl.bash_doc.model.VersionHistoryData;
@@ -91,6 +95,9 @@ public class FileDataBuilder {
             case VERSIONS:
                 setStack(commentStack, new StackObj<>(LineTags.VERSIONS, output.getVersionHistory()));
                 break;
+            case METHOD:
+                processMethod(commentStack, output.getMethod());
+                break;
             case RELEASE:
                 processRelease(commentStack.peek(), data);
                 break;
@@ -113,12 +120,28 @@ public class FileDataBuilder {
             case PROTECTED:
                 process(commentStack.peek(), ScopeType.PROTECTED);
                 break;
+            case PARAMETERS:
+                processParameters(commentStack, data);
+                break;
             default:
                 break;
 
             }
         }
         return output;
+    }
+
+    private static void processParameters(Stack<StackObj<?>> stack, String data) {
+        if (stack.peek().getData() instanceof MethodData) {
+            MethodData methodData = (MethodData) stack.peek().getData();
+            setStack(stack, new StackObj<>(LineTags.PARAMETERS, methodData.getParameter()));
+        }
+    }
+
+    private static boolean outputDefaultValue(final String defaultValue) {
+        if (defaultValue == null || defaultValue.isBlank() || defaultValue.equals("()"))
+            return false;
+        return true;
     }
 
     private static void popStack(final Stack<StackObj<?>> stack, final LineTags lineType) {
@@ -151,12 +174,10 @@ public class FileDataBuilder {
     private static void process(final StackObj<?> obj, final ScopeType data) {
         if (obj == null)
             return;
-        switch (obj.getType()) {
-        case VARIABLE:
+        if (obj.getData() instanceof ComponentCommentData) {
             ((ComponentCommentData) obj.getData()).setScope(data);
-            break;
-        }
-
+        } else
+            System.out.println("Unknown Data Type " + obj.getData());
     }
 
     private static void process(final VariableData output, final String data) {
@@ -164,101 +185,82 @@ public class FileDataBuilder {
             return;
         final String[] array = data.split("=");
         output.setName(array[0]);
-        if (array.length > 1)
+        if (array.length > 1 && outputDefaultValue(array[1]))
             output.setDefault(array[1]);
     }
 
     private static void processAuthor(final StackObj<?> obj, final String data) {
         if (obj == null)
             return;
-        switch (obj.getType()) {
-        case AUTHOR:
-            break;
-        case AUTHOR_EMAIL:
-            break;
-        case CODE:
-            break;
-        case COMMENT:
-            break;
-        case VARIABLE:
-        case HISTORIC_VERSION:
-        case FILE:
+        if (obj.getData() instanceof CommonCommentData) {
             ((CommonCommentData) obj.getData()).setAuthor(data);
-            break;
-        case VERSION:
-            break;
-        case VERSIONS:
-            break;
-        default:
-            break;
+        } else {
+            System.out.println("Author is unknown for: " + obj.getData());
         }
     }
 
     private static void processAuthor_Email(final StackObj<?> obj, final String data) {
         if (obj == null)
             return;
-        switch (obj.getType()) {
-        case AUTHOR:
-            break;
-        case AUTHOR_EMAIL:
-            break;
-        case CODE:
-            break;
-        case COMMENT:
-            break;
-        case VARIABLE:
-        case HISTORIC_VERSION:
-        case FILE:
+        if (obj.getData() instanceof CommonCommentData) {
             ((CommonCommentData) obj.getData()).setAuthorEmail(data);
-            break;
-        case VERSION:
-            break;
-        case VERSIONS:
-            break;
-        case PRIVATE:
-            break;
-        case PROTECTED:
-            break;
-        case PUBLIC:
-            break;
-        case RELEASE:
-            break;
-        default:
-            break;
+        } else {
+            System.out.println("Author Email is unknown for: " + obj.getData());
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static void processComment(final StackObj<?> obj, final String comment) {
         if (obj == null || comment == null || comment.isBlank())
             return;
         switch (obj.getType()) {
-        case AUTHOR:
-            break;
-        case AUTHOR_EMAIL:
-            break;
-        case CODE:
-            break;
-        case COMMENT:
-            break;
         case HISTORIC_VERSION: {
             final CommonCommentData data = (CommonCommentData) obj.getData();
             data.setComment(buildComment(data.getComment(), " - " + comment));
+            return;
+        }
+        case PARAMETERS: {
+            if (obj.getData() instanceof List) {
+                processParameters((List<ParameterData>) obj.getData(), comment);
+            }
             break;
         }
-        case VARIABLE:
-        case FILE: {
-            final CommonCommentData data = (CommonCommentData) obj.getData();
-            data.setComment(buildComment(data.getComment(), comment));
-            break;
-        }
-        case VERSION:
-            break;
-        case VERSIONS:
-            break;
         default:
+            if (obj.getData() instanceof CommonCommentData) {
+                final CommonCommentData data = (CommonCommentData) obj.getData();
+                data.setComment(buildComment(data.getComment(), comment));
+                return;
+            }
+            System.out.println("Comment unknown for: " + obj.getData());
             break;
         }
+    }
 
+    private static void processParameters(List<ParameterData> data, String comment) {
+        if (comment == null || comment.isBlank())
+            return;
+        String[] paramData = comment.split("\\|");
+        if (paramData.length < 1)
+            return;
+        ParameterData output = new ParameterData();
+        String number = paramData[0].replace("$", "").trim();
+        Integer position = null;
+        try {
+            if (number.isBlank() && paramData.length < 2)
+                return;
+            if (!number.isBlank())
+                position = Integer.parseInt(number);
+        } catch (NumberFormatException e) {
+            return;
+        }
+        data.add(output);
+        output.setPosition(position);
+        if (paramData.length < 2)
+            return;
+        output.setName(paramData[1].trim());
+        if (paramData.length < 3)
+            return;
+        output.setDescrtiption(paramData[2].trim());
     }
 
     private static void processHistoricVersion(final Stack<StackObj<?>> stack, final String data) {
@@ -312,6 +314,12 @@ public class FileDataBuilder {
         final VariableData obj = new VariableData();
         data.add(obj);
         setStack(stack, new StackObj<>(LineTags.VARIABLE, obj));
+    }
+
+    private static void processMethod(final Stack<StackObj<?>> stack, final List<MethodData> data) {
+        final MethodData obj = new MethodData();
+        data.add(obj);
+        setStack(stack, new StackObj<>(LineTags.METHOD, obj));
     }
 
     private static void processVersion(final StackObj<?> obj, final String version) {

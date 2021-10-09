@@ -19,9 +19,8 @@ public class BashDocTextOutput {
     private static final VariableTextSort VAR_SORTER = new VariableTextSort();
 
     private static void addHeader(final StringBuilder sb, final int indent, final String text, final String tailText) {
-        sb.append(createHeaderLine(indent));
-        sb.append(createHeaderData(indent, text, tailText));
-        sb.append(createHeaderLine(indent));
+        sb.append('\n').append(createHeaderLine(indent)).append(createHeaderData(indent, text, tailText))
+                .append(createHeaderLine(indent));
     }
 
     private static String createCommentBlock(final int indent, final String comment) {
