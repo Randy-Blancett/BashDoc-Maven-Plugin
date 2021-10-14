@@ -70,6 +70,7 @@ class FileDataBuilderTest {
         assertNull(variable.getDefault());
 
         MethodData method = data.getMethod().get(0);
+        assertEquals("function1", method.getName());
         assertEquals(ScopeType.PUBLIC, method.getScope());
         assertEquals("The Description", method.getComment());
         List<ParameterData> parameters = method.getParameter();

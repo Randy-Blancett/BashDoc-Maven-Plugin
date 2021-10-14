@@ -52,3 +52,6 @@ VAR4=()
 #EXAMPLES
 # Example 1
 # Example 2
+ 	function function1() {
+ 			echo hello world
+ 	}
