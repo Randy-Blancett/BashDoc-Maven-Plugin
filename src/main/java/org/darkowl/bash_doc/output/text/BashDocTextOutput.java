@@ -10,13 +10,14 @@ import java.util.List;
 import org.apache.maven.plugin.logging.Log;
 import org.darkowl.bash_doc.model.CommonCommentData;
 import org.darkowl.bash_doc.model.Library;
+import org.darkowl.bash_doc.model.MethodData;
 import org.darkowl.bash_doc.model.VariableData;
 import org.darkowl.bash_doc.model.VersionHistoryData;
 
 public class BashDocTextOutput {
     private static final DateFormat dateFormater = DateFormat.getDateTimeInstance();
     public static final int LINE_WIDTH = 80;
-    private static final VariableTextSort VAR_SORTER = new VariableTextSort();
+    private static final ComponentCommentDataSort COMPONENT_COMMENT_DATA_SORTER = new ComponentCommentDataSort();
 
     private static void addHeader(final StringBuilder sb, final int indent, final String text, final String tailText) {
         sb.append('\n').append(createHeaderLine(indent)).append(createHeaderData(indent, text, tailText))
@@ -109,8 +110,20 @@ public class BashDocTextOutput {
             process(sb, 0, file);
             process(sb, 1, file.getVersionHistory());
             processVariables(sb, 1, file.getVariable());
+            processMethods(sb, 1, file.getMethod());
             writeFileData(file.getFileName(), sb.toString().getBytes());
         });
+    }
+
+    private void processMethods(StringBuilder sb, int index, List<MethodData> methods) {
+        if (methods == null || methods.isEmpty())
+            return;
+        addHeader(sb, index, "Methods", null);
+        Collections.sort(methods, COMPONENT_COMMENT_DATA_SORTER);
+        methods.forEach(method -> {
+            process(sb, index + 1, method);
+        });
+
     }
 
     private void process(final StringBuilder output, final int index, final CommonCommentData commentData) {
@@ -134,6 +147,13 @@ public class BashDocTextOutput {
 
     }
 
+    private void process(final StringBuilder output, final int index, final MethodData data) {
+        if (data == null)
+            return;
+        addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
+        process(output, index, (CommonCommentData) data);
+    }
+
     private void process(final StringBuilder output, final int index, final VariableData data) {
         if (data == null)
             return;
@@ -146,11 +166,10 @@ public class BashDocTextOutput {
         if (variables == null || variables.isEmpty())
             return;
         addHeader(sb, index, "Variables", null);
-        Collections.sort(variables, VAR_SORTER);
+        Collections.sort(variables, COMPONENT_COMMENT_DATA_SORTER);
         variables.forEach(var -> {
             process(sb, index + 1, var);
         });
-
     }
 
     private void writeFileData(final String fileName, final byte[] content) {

@@ -96,6 +96,9 @@ public class FileDataBuilder {
             case METHOD:
                 processMethod(commentStack, output.getMethod());
                 break;
+            case EXAMPLES:
+                processExamples(commentStack);
+                break;
             case RELEASE:
                 processRelease(commentStack.peek(), data);
                 break;
@@ -127,6 +130,19 @@ public class FileDataBuilder {
             }
         }
         return output;
+    }
+
+    static void processExamples(CommentStack commentStack) {
+        if (commentStack == null)
+            return;
+        StackObj<?> obj = commentStack.peek();
+        if (obj == null)
+            return;
+        Object data = obj.getData();
+        if (data instanceof MethodData) {
+            MethodData dataType = (MethodData) data;
+            setStack(commentStack, new StackObj<>(LineTags.EXAMPLES, dataType.getExample()));
+        }
     }
 
     private static boolean outputDefaultValue(final String defaultValue) {
@@ -212,6 +228,11 @@ public class FileDataBuilder {
                 processParameters((List<ParameterData>) obj.getData(), comment);
             break;
         }
+        case EXAMPLES: {
+            if (obj.getData() instanceof List)
+                ((List<String>) obj.getData()).add(comment);
+            break;
+        }
         default:
             if (obj.getData() instanceof CommonCommentData) {
                 final CommonCommentData data = (CommonCommentData) obj.getData();
@@ -292,8 +313,11 @@ public class FileDataBuilder {
     }
 
     private static void processParameters(final Stack<StackObj<?>> stack, final String data) {
-        if (stack.peek().getData() instanceof MethodData) {
-            final MethodData methodData = (MethodData) stack.peek().getData();
+        StackObj<?> obj = stack.peek();
+        if (obj == null)
+            return;
+        if (obj.getData() instanceof MethodData) {
+            final MethodData methodData = (MethodData) obj.getData();
             setStack(stack, new StackObj<>(LineTags.PARAMETERS, methodData.getParameter()));
         }
     }

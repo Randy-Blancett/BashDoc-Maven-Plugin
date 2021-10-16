@@ -65,7 +65,8 @@ This Tells the plugin to output a text version of the documentation
 This is the general author of the file
 ### AUTHOR_EMAIL
 This is the email of the author of the file
-
+### EXAMPLES
+This is the Examples of how to use the method
 ### FILE
 indicates that the comment is for the file as a whole
 ### METHOD

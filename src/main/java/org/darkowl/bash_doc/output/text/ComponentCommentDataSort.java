@@ -3,13 +3,14 @@ package org.darkowl.bash_doc.output.text;
 import java.util.Comparator;
 import java.util.Objects;
 
+import org.darkowl.bash_doc.model.ComponentCommentData;
+import org.darkowl.bash_doc.model.MethodData;
 import org.darkowl.bash_doc.model.ScopeType;
-import org.darkowl.bash_doc.model.VariableData;
 
-public class VariableTextSort implements Comparator<VariableData> {
+public class ComponentCommentDataSort implements Comparator<ComponentCommentData> {
 
     @Override
-    public int compare(final VariableData arg0, final VariableData arg1) {
+    public int compare(ComponentCommentData arg0, ComponentCommentData arg1) {
         if (arg0 == null && arg1 == null)
             return 0;
         if (arg0 == null)

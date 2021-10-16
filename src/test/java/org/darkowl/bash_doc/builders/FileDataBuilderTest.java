@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import org.darkowl.bash_doc.builders.FileDataBuilder.CommentStack;
 import org.darkowl.bash_doc.builders.FileDataBuilder.StackObj;
 import org.darkowl.bash_doc.enums.LineTags;
 import org.darkowl.bash_doc.model.FileData;
@@ -81,6 +82,18 @@ class FileDataBuilderTest {
         assertEquals(2, parameters.get(1).getPosition());
         assertEquals("Long Command", parameters.get(1).getName());
         assertEquals("Long Command Description", parameters.get(1).getDescrtiption());
+
+        assertEquals(2, method.getExample().size());
+        assertEquals("Example 1", method.getExample().get(0));
+        assertEquals("Example 2", method.getExample().get(1));
+    }
+
+    @Test
+    void testProcessExamples() {
+        CommentStack stack = new CommentStack();
+        FileDataBuilder.processExamples(null);
+        stack.push(null);
+        FileDataBuilder.processExamples(stack);
     }
 
     @Test
