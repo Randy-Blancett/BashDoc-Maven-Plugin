@@ -33,7 +33,7 @@
   </prerequisites>
   <scm>
     <connection>scm:git:https://github.com/Randy-Blancett/BashDoc-Maven-Plugin.git</connection>
-    <tag>1.0.0</tag>
+    <developerConnection>scm:git:ssh://git@github.com/Randy-Blancett/BashDoc-Maven-Plugin.git</developerConnection>
     <url>https://github.com/Randy-Blancett/BashDoc-Maven-Plugin</url>
   </scm>
   <distributionManagement>
