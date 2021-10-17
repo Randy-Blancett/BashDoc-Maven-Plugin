@@ -1,14 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.darkowl.bashDoc</groupId>
+  <groupId>io.github.randy-blancett</groupId>
   <artifactId>bashDoc-maven-plugin</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
   <name>bashDoc-maven-plugin Maven Plugin</name>
+  <description>This project allows you to create documentation of your bash scripts similar to java doc</description>
+  <url>https://github.com/Randy-Blancett/BashDoc-Maven-Plugin</url>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+      <comments>A business-friendly OSS license</comments>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>Randy.Blancett</id>
+      <name>Randy Blancett</name>
+      <email>Randy.Blancett@gmail.com</email>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+    </developer>
+  </developers>
   <prerequisites>
     <maven>${maven.version}</maven>
   </prerequisites>
+  <scm>
+    <connection>scm:git:git://github.com/Randy-Blancett/BashDoc-Maven-Plugin.git</connection>
+    <developerConnection>scm:git@github.com:Randy-Blancett/BashDoc-Maven-Plugin.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://github.com/Randy-Blancett/BashDoc-Maven-Plugin</url>
+  </scm>
+  <distributionManagement>
+    <repository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
   <properties>
     <jaxb.api.version>2.4.0-b180830.0359</jaxb.api.version>
     <maven.compiler.source>11</maven.compiler.source>
@@ -174,6 +212,47 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+            <phase>verify</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
