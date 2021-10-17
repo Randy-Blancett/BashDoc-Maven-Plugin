@@ -4,13 +4,12 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import org.darkowl.bash_doc.model.ComponentCommentData;
-import org.darkowl.bash_doc.model.MethodData;
 import org.darkowl.bash_doc.model.ScopeType;
 
 public class ComponentCommentDataSort implements Comparator<ComponentCommentData> {
 
     @Override
-    public int compare(ComponentCommentData arg0, ComponentCommentData arg1) {
+    public int compare(final ComponentCommentData arg0, final ComponentCommentData arg1) {
         if (arg0 == null && arg1 == null)
             return 0;
         if (arg0 == null)

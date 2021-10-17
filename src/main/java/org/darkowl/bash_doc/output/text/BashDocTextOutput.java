@@ -11,13 +11,14 @@ import org.apache.maven.plugin.logging.Log;
 import org.darkowl.bash_doc.model.CommonCommentData;
 import org.darkowl.bash_doc.model.Library;
 import org.darkowl.bash_doc.model.MethodData;
+import org.darkowl.bash_doc.model.ParameterData;
 import org.darkowl.bash_doc.model.VariableData;
 import org.darkowl.bash_doc.model.VersionHistoryData;
 
 public class BashDocTextOutput {
+    private static final ComponentCommentDataSort COMPONENT_COMMENT_DATA_SORTER = new ComponentCommentDataSort();
     private static final DateFormat dateFormater = DateFormat.getDateTimeInstance();
     public static final int LINE_WIDTH = 80;
-    private static final ComponentCommentDataSort COMPONENT_COMMENT_DATA_SORTER = new ComponentCommentDataSort();
 
     private static void addHeader(final StringBuilder sb, final int indent, final String text, final String tailText) {
         sb.append('\n').append(createHeaderLine(indent)).append(createHeaderData(indent, text, tailText))
@@ -61,6 +62,19 @@ public class BashDocTextOutput {
         while (output.length() < LINE_WIDTH)
             output.append('*');
         output.append('\n');
+        return output.toString();
+    }
+
+    private static String createParameterOutput(final int indent, final Integer position, final String name,
+            final String description) {
+        if (position == null && name == null && description == null)
+            return null;
+        final StringBuilder output = new StringBuilder();
+        indentLine(output, indent);
+        output.append(String.format("%02d - ", position)).append(name);
+        while (output.length() < 30)
+            output.append(' ');
+        output.append(description).append('\n');
         return output.toString();
     }
 
@@ -115,17 +129,6 @@ public class BashDocTextOutput {
         });
     }
 
-    private void processMethods(StringBuilder sb, int index, List<MethodData> methods) {
-        if (methods == null || methods.isEmpty())
-            return;
-        addHeader(sb, index, "Methods", null);
-        Collections.sort(methods, COMPONENT_COMMENT_DATA_SORTER);
-        methods.forEach(method -> {
-            process(sb, index + 1, method);
-        });
-
-    }
-
     private void process(final StringBuilder output, final int index, final CommonCommentData commentData) {
         if (commentData == null)
             return;
@@ -152,6 +155,8 @@ public class BashDocTextOutput {
             return;
         addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
         process(output, index, (CommonCommentData) data);
+        addHeader(output, index + 1, "Parameters", null);
+        processParameters(output, index + 1, data.getParameter());
     }
 
     private void process(final StringBuilder output, final int index, final VariableData data) {
@@ -160,6 +165,25 @@ public class BashDocTextOutput {
         addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
         process(output, index, (CommonCommentData) data);
         output.append(createPropertyOutput(index, "Default Value", data.getDefault()));
+    }
+
+    private void processMethods(final StringBuilder sb, final int index, final List<MethodData> methods) {
+        if (methods == null || methods.isEmpty())
+            return;
+        addHeader(sb, index, "Methods", null);
+        Collections.sort(methods, COMPONENT_COMMENT_DATA_SORTER);
+        methods.forEach(method -> {
+            process(sb, index + 1, method);
+        });
+
+    }
+
+    private void processParameters(final StringBuilder output, final int index, final List<ParameterData> parameters) {
+        if (parameters == null || parameters.isEmpty())
+            return;
+        parameters.forEach(param -> {
+            output.append(createParameterOutput(index, param.getPosition(), param.getName(), param.getDescrtiption()));
+        });
     }
 
     private void processVariables(final StringBuilder sb, final int index, final List<VariableData> variables) {
