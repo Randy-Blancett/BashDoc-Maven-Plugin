@@ -132,19 +132,6 @@ public class FileDataBuilder {
         return output;
     }
 
-    static void processExamples(CommentStack commentStack) {
-        if (commentStack == null)
-            return;
-        StackObj<?> obj = commentStack.peek();
-        if (obj == null)
-            return;
-        Object data = obj.getData();
-        if (data instanceof MethodData) {
-            MethodData dataType = (MethodData) data;
-            setStack(commentStack, new StackObj<>(LineTags.EXAMPLES, dataType.getExample()));
-        }
-    }
-
     private static boolean outputDefaultValue(final String defaultValue) {
         if (defaultValue == null || defaultValue.isBlank() || defaultValue.equals("()"))
             return false;
@@ -244,6 +231,19 @@ public class FileDataBuilder {
         }
     }
 
+    static void processExamples(final CommentStack commentStack) {
+        if (commentStack == null)
+            return;
+        final StackObj<?> obj = commentStack.peek();
+        if (obj == null)
+            return;
+        final Object data = obj.getData();
+        if (data instanceof MethodData) {
+            final MethodData dataType = (MethodData) data;
+            setStack(commentStack, new StackObj<>(LineTags.EXAMPLES, dataType.getExample()));
+        }
+    }
+
     private static void processHistoricVersion(final Stack<StackObj<?>> stack, final String data) {
         final StackObj<?> obj = stack.peek();
         if (obj == null)
@@ -313,7 +313,7 @@ public class FileDataBuilder {
     }
 
     private static void processParameters(final Stack<StackObj<?>> stack, final String data) {
-        StackObj<?> obj = stack.peek();
+        final StackObj<?> obj = stack.peek();
         if (obj == null)
             return;
         if (obj.getData() instanceof MethodData) {

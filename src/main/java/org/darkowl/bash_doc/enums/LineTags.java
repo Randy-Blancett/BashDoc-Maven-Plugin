@@ -2,8 +2,8 @@ package org.darkowl.bash_doc.enums;
 
 public enum LineTags {
     AUTHOR("AUTHOR ", MatchTypes.START, 4), AUTHOR_EMAIL("AUTHOR_EMAIL ", MatchTypes.START, 4), CODE(null, null, 2),
-    COMMENT(null, null, 100), FILE("FILE", MatchTypes.EQ, 1), HISTORIC_VERSION("V ", MatchTypes.START, 3),
-    METHOD("METHOD", MatchTypes.EQ, 1), EXAMPLES("EXAMPLES", MatchTypes.EQ, 2),
+    COMMENT(null, null, 100), EXAMPLES("EXAMPLES", MatchTypes.EQ, 2), FILE("FILE", MatchTypes.EQ, 1),
+    HISTORIC_VERSION("V ", MatchTypes.START, 3), METHOD("METHOD", MatchTypes.EQ, 1),
     PARAMETERS("PARAMETERS", MatchTypes.EQ, 2), PRIVATE("PRIVATE", MatchTypes.EQ, 2),
     PROTECTED("PROTECTED", MatchTypes.EQ, 2), PUBLIC("PUBLIC", MatchTypes.EQ, 2),
     RELEASE("RELEASE ", MatchTypes.START, 4), VARIABLE("VARIABLE", MatchTypes.EQ, 1),
