@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.randy-blancett</groupId>
   <artifactId>bashDoc-maven-plugin</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
   <name>bashDoc-maven-plugin Maven Plugin</name>
   <description>This project allows you to create documentation of your bash scripts similar to java doc</description>
@@ -34,7 +34,6 @@
   <scm>
     <connection>scm:git:https://github.com/Randy-Blancett/BashDoc-Maven-Plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Randy-Blancett/BashDoc-Maven-Plugin.git</developerConnection>
-    <tag>1.0.0</tag>
     <url>https://github.com/Randy-Blancett/BashDoc-Maven-Plugin</url>
   </scm>
   <distributionManagement>
@@ -56,6 +55,20 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
+    <dependency>
+      <!-- Required for the calling application to output xml -->
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-core</artifactId>
+      <version>2.3.0.1</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <!-- Required for the calling application to output xml -->
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>2.4.0-b180830.0438</version>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
