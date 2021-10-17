@@ -37,6 +37,10 @@ This will create documentation files for a bash script based on in script commen
           </execution>
         </executions>
       </plugin>
+      
+## Deployment
+    mvn release:clean release:prepare
+    mvn release:perform      
 
 ### Plugin Configurations
 
