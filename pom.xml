@@ -322,6 +322,9 @@
             <goals>
               <goal>format</goal>
             </goals>
+            <configuration>
+              <configFile>${project.basedir}/src/main/resources/DarkOwlStandard.xml</configFile>
+            </configuration>
           </execution>
         </executions>
       </plugin>
