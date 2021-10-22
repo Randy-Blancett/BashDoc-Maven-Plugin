@@ -41,8 +41,7 @@ public class BashDocPluginTest {
     }
 
     /**
-     * @throws Exception
-     *             if any
+     * @throws Exception if any
      */
     @Test
     public void testExecute_badDirectory() throws Exception {
