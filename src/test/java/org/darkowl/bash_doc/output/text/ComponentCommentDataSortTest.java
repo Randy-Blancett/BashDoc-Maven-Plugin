@@ -1,6 +1,6 @@
 package org.darkowl.bash_doc.output.text;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +10,6 @@ import org.darkowl.bash_doc.model.ComponentCommentData;
 import org.darkowl.bash_doc.model.MethodData;
 import org.darkowl.bash_doc.model.ScopeType;
 import org.darkowl.bash_doc.model.VariableData;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 

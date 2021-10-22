@@ -70,11 +70,11 @@ class FileDataBuilderTest {
         assertEquals("VAR4", variable.getName());
         assertNull(variable.getDefault());
 
-        MethodData method = data.getMethod().get(0);
+        final MethodData method = data.getMethod().get(0);
         assertEquals("function1", method.getName());
         assertEquals(ScopeType.PUBLIC, method.getScope());
         assertEquals("The Description", method.getComment());
-        List<ParameterData> parameters = method.getParameter();
+        final List<ParameterData> parameters = method.getParameter();
         assertEquals(2, parameters.size());
         assertEquals(1, parameters.get(0).getPosition());
         assertEquals("Flag", parameters.get(0).getName());
@@ -90,7 +90,7 @@ class FileDataBuilderTest {
 
     @Test
     void testProcessExamples() {
-        CommentStack stack = new CommentStack();
+        final CommentStack stack = new CommentStack();
         FileDataBuilder.processExamples(null);
         stack.push(null);
         FileDataBuilder.processExamples(stack);

@@ -21,7 +21,9 @@ public class BashDocTextOutput {
     public static final int LINE_WIDTH = 80;
 
     private static void addHeader(final StringBuilder sb, final int indent, final String text, final String tailText) {
-        sb.append('\n').append(createHeaderLine(indent)).append(createHeaderData(indent, text, tailText))
+        if (sb.length() > 1)
+            sb.append('\n');
+        sb.append(createHeaderLine(indent)).append(createHeaderData(indent, text, tailText))
                 .append(createHeaderLine(indent));
     }
 
@@ -125,7 +127,7 @@ public class BashDocTextOutput {
             process(sb, 1, file.getVersionHistory());
             processVariables(sb, 1, file.getVariable());
             processMethods(sb, 1, file.getMethod());
-            writeFileData(file.getFileName(), sb.toString().getBytes());
+            writeFileData(file.getFileName().replaceFirst("[.][^.]+$", ".txt"), sb.toString().getBytes());
         });
     }
 
@@ -155,7 +157,6 @@ public class BashDocTextOutput {
             return;
         addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
         process(output, index, (CommonCommentData) data);
-        addHeader(output, index + 1, "Parameters", null);
         processParameters(output, index + 1, data.getParameter());
     }
 
@@ -181,6 +182,7 @@ public class BashDocTextOutput {
     private void processParameters(final StringBuilder output, final int index, final List<ParameterData> parameters) {
         if (parameters == null || parameters.isEmpty())
             return;
+        addHeader(output, index, "Parameters", null);
         parameters.forEach(param -> {
             output.append(createParameterOutput(index, param.getPosition(), param.getName(), param.getDescrtiption()));
         });

@@ -23,7 +23,7 @@ class BashDocTextOutputTest {
         final Path outputDirectory = Paths.get("target/testOutput/doc");
         Files.createDirectories(outputDirectory);
         BashDocTextOutput.output(new SystemStreamLog(), outputDirectory, lib);
-        assertTrue(Files.exists(outputDirectory.resolve("text").resolve("Test1.sh")),
+        assertTrue(Files.exists(outputDirectory.resolve("text").resolve("Test1.txt")),
                 outputDirectory.resolve("text/Test1.sh").toAbsolutePath().toString());
     }
 
