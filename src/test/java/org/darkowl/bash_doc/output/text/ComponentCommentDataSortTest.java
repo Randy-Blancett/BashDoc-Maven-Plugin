@@ -18,13 +18,18 @@ class ComponentCommentDataSortTest {
     private final ComponentCommentDataSort sorter = new ComponentCommentDataSort();
 
     @ParameterizedTest
-    @CsvSource({ "aaa, PUBLIC,   aaa, PRIVATE,   true", "aaa, PRIVATE,  aaa, PUBLIC,    false",
+    @CsvSource({
+            "aaa, PUBLIC,   aaa, PRIVATE,   true", "aaa, PRIVATE,  aaa, PUBLIC,    false",
             "aaa, PRIVATE,  aaa, ,          true", "aaa, ,         aaa, PUBLIC,    false",
             "aaa, PROTECTED,aaa, PUBLIC,    false", "aaa, PUBLIC,   aaa, PROTECTED, true",
             "aaa, PROTECTED,aaa, PRIVATE,   true", "aaa, PRIVATE,  aaa, PROTECTED, false",
             "aaa, PUBLIC,   aab, PUBLIC,    true", "aac, PUBLIC,   aab, PUBLIC,    false",
-            ",    PUBLIC,   aab, PUBLIC,    false", "aac, PUBLIC,   ,    PUBLIC,    true" })
-    void testCompare(final String arg1Name, final ScopeType arg1Scope, final String arg2Name, final ScopeType arg2Scope,
+            ",    PUBLIC,   aab, PUBLIC,    false", "aac, PUBLIC,   ,    PUBLIC,    true"
+    })
+    void testCompare(final String arg1Name,
+            final ScopeType arg1Scope,
+            final String arg2Name,
+            final ScopeType arg2Scope,
             final boolean firstFirst) {
         final VariableData arg1 = new VariableData();
         arg1.setName(arg1Name);
@@ -55,14 +60,19 @@ class ComponentCommentDataSortTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "aaa, PUBLIC,   aaa, PRIVATE,   true", "aaa, PRIVATE,  aaa, PUBLIC,    false",
+    @CsvSource({
+            "aaa, PUBLIC,   aaa, PRIVATE,   true", "aaa, PRIVATE,  aaa, PUBLIC,    false",
             "aaa, PRIVATE,  aaa, ,          true", "aaa, ,         aaa, PUBLIC,    false",
             "aaa, PROTECTED,aaa, PUBLIC,    false", "aaa, PUBLIC,   aaa, PROTECTED, true",
             "aaa, PROTECTED,aaa, PRIVATE,   true", "aaa, PRIVATE,  aaa, PROTECTED, false",
             "aaa, PUBLIC,   aab, PUBLIC,    true", "aac, PUBLIC,   aab, PUBLIC,    false",
-            ",    PUBLIC,   aab, PUBLIC,    false", "aac, PUBLIC,   ,    PUBLIC,    true" })
-    void testMethodDataCompare(final String arg1Name, final ScopeType arg1Scope, final String arg2Name,
-            final ScopeType arg2Scope, final boolean firstFirst) {
+            ",    PUBLIC,   aab, PUBLIC,    false", "aac, PUBLIC,   ,    PUBLIC,    true"
+    })
+    void testMethodDataCompare(final String arg1Name,
+            final ScopeType arg1Scope,
+            final String arg2Name,
+            final ScopeType arg2Scope,
+            final boolean firstFirst) {
         final MethodData arg1 = new MethodData();
         arg1.setName(arg1Name);
         arg1.setScope(arg1Scope);

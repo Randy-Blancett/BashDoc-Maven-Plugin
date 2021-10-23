@@ -67,7 +67,9 @@ public class BashDocTextOutput {
         return output.toString();
     }
 
-    private static String createParameterOutput(final int indent, final Integer position, final String name,
+    private static String createParameterOutput(final int indent,
+            final Integer position,
+            final String name,
             final String description) {
         if (position == null && name == null && description == null)
             return null;

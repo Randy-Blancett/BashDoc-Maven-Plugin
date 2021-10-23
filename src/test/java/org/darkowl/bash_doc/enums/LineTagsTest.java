@@ -8,17 +8,21 @@ import org.junit.jupiter.params.provider.CsvSource;
 class LineTagsTest {
 
     @ParameterizedTest
-    @CsvSource({ " #FILE          , FILE", //
+    @CsvSource({
+            " #FILE          , FILE", //
             "data            , CODE", //
             " #BAD            , COMMENT", //
             " # Comment       , COMMENT", //
-            " #VARIABLE       , VARIABLE" })
+            " #VARIABLE       , VARIABLE"
+    })
     void testParse(final String line, final LineTags tag) {
         assertEquals(tag, LineTags.parse(line));
     }
 
     @ParameterizedTest
-    @CsvSource({ " #VERSION 1.0.0          , VERSION, 1.0.0" })
+    @CsvSource({
+            " #VERSION 1.0.0          , VERSION, 1.0.0"
+    })
     void testStripTag(final String line, final LineTags tag, final String expected) {
         assertEquals(expected, tag.stripTag(line));
     }
