@@ -28,4 +28,23 @@ class BashDocTextOutputTest {
                 outputDirectory.resolve("text/Test1.sh").toAbsolutePath().toString());
     }
 
+    @Test
+    void testOutputLine() {
+        final StringBuilder sb = new StringBuilder();
+        BashDocTextOutput.outputLine(
+                sb,
+                0,
+                "The ",
+                "quick ",
+                "brown ",
+                "fox ",
+                "jumps over the lazy dog.",
+                "The quick brown fox jumps over the lazy dog. ",
+                "the quick brown fox jumps over the lazy dog.",
+                "there are some other things to think about when doing this ");
+        final String[] testArray = sb.toString().split("\n");
+        for (final String testItem : testArray)
+            assertTrue(testItem.length() <= BashDocTextOutput.LINE_WIDTH);
+    }
+
 }

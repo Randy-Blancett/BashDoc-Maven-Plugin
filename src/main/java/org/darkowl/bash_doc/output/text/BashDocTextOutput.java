@@ -18,6 +18,7 @@ import org.darkowl.bash_doc.model.VersionHistoryData;
 public class BashDocTextOutput {
     private static final ComponentCommentDataSort COMPONENT_COMMENT_DATA_SORTER = new ComponentCommentDataSort();
     private static final DateFormat dateFormater = DateFormat.getDateTimeInstance();
+    public static final int INDENT_SIZE = 4;
     public static final int LINE_WIDTH = 80;
 
     private static void addHeader(final StringBuilder sb, final int indent, final String text, final String tailText) {
@@ -35,9 +36,7 @@ public class BashDocTextOutput {
         for (final String line : commentLines) {
             if (line == null || line.isBlank())
                 continue;
-            indentLine(output, indent);
-            output.append(line);
-            output.append('\n');
+            outputLine(output, indent, line);
         }
 
         return output.toString();
@@ -74,11 +73,7 @@ public class BashDocTextOutput {
         if (position == null && name == null && description == null)
             return null;
         final StringBuilder output = new StringBuilder();
-        indentLine(output, indent);
-        output.append(String.format("%02d - ", position)).append(name);
-        while (output.length() < 30)
-            output.append(' ');
-        output.append(description).append('\n');
+        outputLine(output, indent, String.format("%02d - ", position), padRight(name, 15), description);
         return output.toString();
     }
 
@@ -86,14 +81,14 @@ public class BashDocTextOutput {
         if (key == null || value == null)
             return "";
         final StringBuilder output = new StringBuilder();
-        indentLine(output, indent);
-        output.append(" - ").append(key).append(" : ").append(value).append('\n');
+        outputLine(output, indent, " - ", key, " : ", value);
         return output.toString();
     }
 
     private static void indentLine(final StringBuilder output, final int indent) {
         for (int i = 0; i < indent; i++)
-            output.append(' ');
+            for (int i2 = 0; i2 < INDENT_SIZE; i2++)
+                output.append(' ');
     }
 
     public static void output(final Log log, final Path outputDirectory, final Library library) {
@@ -106,8 +101,36 @@ public class BashDocTextOutput {
         }
     }
 
-    private final Log log;
+    static void outputLine(final StringBuilder output, final int indent, final String... data) {
+        long start = output.length();
+        indentLine(output, indent);
+        boolean hasOutput = false;
+        for (final String item : data) {
+            final String[] words = item.split("\\b");
+            for (final String word : words) {
+                if (hasOutput && output.length() - start + word.length() > LINE_WIDTH) {
+                    if (word.isBlank())
+                        continue;
+                    output.append('\n');
+                    start = output.length();
+                    indentLine(output, indent + 1);
+                    hasOutput = false;
+                }
+                output.append(word);
+                hasOutput = true;
+            }
+        }
+        output.append('\n');
+    }
 
+    private static String padRight(final String text, final int totalLength) {
+        final StringBuilder output = new StringBuilder(text);
+        while (output.length() < totalLength)
+            output.append(' ');
+        return output.toString();
+    }
+
+    private final Log log;
     private final Path outputDir;
 
     public BashDocTextOutput(final Log log, final Path outputDir) throws IOException {
