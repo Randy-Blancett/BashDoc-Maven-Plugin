@@ -73,7 +73,7 @@ public class BashDocTextOutput {
         if (position == null && name == null && description == null)
             return null;
         final StringBuilder output = new StringBuilder();
-        outputLine(output, indent, String.format("%02d - ", position), padRight(name, 15), description);
+        outputLine(output, indent, " ", String.format("%02d - ", position), padRight(name, 15), description);
         return output.toString();
     }
 
@@ -183,6 +183,19 @@ public class BashDocTextOutput {
         addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
         process(output, index, (CommonCommentData) data);
         processParameters(output, index + 1, data.getParameter());
+        processExamples(output, index + 1, data.getExample());
+    }
+
+    private void processExamples(StringBuilder output, int index, List<String> examples) {
+        if (examples == null || examples.isEmpty())
+            return;
+        addHeader(output, index, "Examples", null);
+        examples.forEach(example -> {
+            if (example == null || example.isBlank())
+                return;
+            outputLine(output, index, " ", example);
+        });
+
     }
 
     private void process(final StringBuilder output, final int index, final VariableData data) {
