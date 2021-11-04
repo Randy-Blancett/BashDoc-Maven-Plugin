@@ -12,6 +12,7 @@ import java.util.Stack;
 import org.darkowl.bash_doc.builders.FileDataBuilder.CommentStack;
 import org.darkowl.bash_doc.builders.FileDataBuilder.StackObj;
 import org.darkowl.bash_doc.enums.LineTags;
+import org.darkowl.bash_doc.model.ExitCodeData;
 import org.darkowl.bash_doc.model.FileData;
 import org.darkowl.bash_doc.model.MethodData;
 import org.darkowl.bash_doc.model.ParameterData;
@@ -42,6 +43,14 @@ class FileDataBuilderTest {
         assertEquals("0.1.1", history.getVersion());
         assertEquals(" - Things", history.getComment());
         assertEquals("12Dec2021", history.getRelease());
+
+        assertEquals(2, data.getExitCode().size());
+        ExitCodeData exitCode = data.getExitCode().get(0);
+        assertEquals(0, exitCode.getCode());
+        assertEquals("No Errors", exitCode.getDescription());
+        exitCode = data.getExitCode().get(1);
+        assertEquals(1, exitCode.getCode());
+        assertEquals("Some Error", exitCode.getDescription());
 
         assertEquals(4, data.getVariable().size());
         VariableData variable = data.getVariable().get(0);
@@ -86,6 +95,14 @@ class FileDataBuilderTest {
         assertEquals(2, method.getExample().size());
         assertEquals("Example 1", method.getExample().get(0));
         assertEquals("Example 2", method.getExample().get(1));
+
+        assertEquals(2, method.getExitCode().size());
+        exitCode = method.getExitCode().get(0);
+        assertEquals(0, exitCode.getCode());
+        assertEquals("Everything worked fine", exitCode.getDescription());
+        exitCode = method.getExitCode().get(1);
+        assertEquals(1, exitCode.getCode());
+        assertEquals("Something went very wrong...", exitCode.getDescription());
     }
 
     @Test

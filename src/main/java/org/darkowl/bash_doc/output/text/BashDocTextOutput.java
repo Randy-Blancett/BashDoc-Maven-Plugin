@@ -186,7 +186,15 @@ public class BashDocTextOutput {
         processExamples(output, index + 1, data.getExample());
     }
 
-    private void processExamples(StringBuilder output, int index, List<String> examples) {
+    private void process(final StringBuilder output, final int index, final VariableData data) {
+        if (data == null)
+            return;
+        addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
+        process(output, index, (CommonCommentData) data);
+        output.append(createPropertyOutput(index, "Default Value", data.getDefault()));
+    }
+
+    private void processExamples(final StringBuilder output, final int index, final List<String> examples) {
         if (examples == null || examples.isEmpty())
             return;
         addHeader(output, index, "Examples", null);
@@ -196,14 +204,6 @@ public class BashDocTextOutput {
             outputLine(output, index, " ", example);
         });
 
-    }
-
-    private void process(final StringBuilder output, final int index, final VariableData data) {
-        if (data == null)
-            return;
-        addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
-        process(output, index, (CommonCommentData) data);
-        output.append(createPropertyOutput(index, "Default Value", data.getDefault()));
     }
 
     private void processMethods(final StringBuilder sb, final int index, final List<MethodData> methods) {

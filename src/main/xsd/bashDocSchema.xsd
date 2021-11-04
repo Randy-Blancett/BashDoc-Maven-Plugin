@@ -39,7 +39,9 @@
 					<element name="Variable" type="tns:VariableData"
 						maxOccurs="unbounded" minOccurs="0" />
 					<element name="Method" type="tns:MethodData"
-						maxOccurs="unbounded" minOccurs="0"></element>
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
+					<element name="ExitCode" type="tns:ExitCodeData" maxOccurs="unbounded" minOccurs="0"></element>
 				</sequence>
 				<attribute name="FileName" type="string" />
 				<attribute name="Version" type="string" />
@@ -89,8 +91,10 @@
 					<element name="Parameter" type="tns:ParameterData"
 						maxOccurs="unbounded" minOccurs="0">
 					</element>
-					<element name="Example" type="string" maxOccurs="unbounded"
-						minOccurs="0"></element>
+					<element name="Example" type="string"
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
+					<element name="ExitCode" type="tns:ExitCodeData" maxOccurs="unbounded" minOccurs="0"></element>
 				</sequence>
 			</extension>
 		</complexContent>
@@ -100,5 +104,10 @@
 		<attribute name="Position" type="int"></attribute>
 		<attribute name="Descrtiption" type="string"></attribute>
 		<attribute name="Name" type="string"></attribute>
+	</complexType>
+
+	<complexType name="ExitCodeData">
+		<attribute name="code" type="int"></attribute>
+		<attribute name="description" type="string"></attribute>
 	</complexType>
 </schema>
