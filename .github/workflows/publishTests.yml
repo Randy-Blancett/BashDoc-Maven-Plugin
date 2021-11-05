@@ -4,13 +4,19 @@ on:
     workflows: ['Build with Maven']                     # runs after CI workflow
     types:
       - completed
+   
 jobs:
-  report:
+  publish-test-results:
+    name: "Publish Test Results"
     runs-on: ubuntu-latest
     steps:
-    - uses: dorny/test-reporter@v1
-      with:
-        artifact: test-results            # artifact name
-        name: JEST Tests                  # Name of the check run which will be created
-        path: 'target/surefire-reports/*.xml'                     # Path to test results (inside artifact .zip)
-        reporter: jest-junit              # Format of test results
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: test-results
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1.4
+        with:
+          check_name: Unit Test Results
+          files: '*.xml'
