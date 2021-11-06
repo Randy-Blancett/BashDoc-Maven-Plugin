@@ -51,5 +51,6 @@ jobs:
        uses: EnricoMi/publish-unit-test-result-action@v1.23
        if: always()
        with:
-          name: Unit Test Results (Java ${{ matrix.java-version }})
+          event_name: Unit Test Results (Java ${{ matrix.java-version }})
+          check_name: Unit Test Results (Java ${{ matrix.java-version }})
           files: './${{ matrix.java-version }}/java-test-results/*.xml'
