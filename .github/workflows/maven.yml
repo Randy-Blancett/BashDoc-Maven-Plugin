@@ -11,13 +11,10 @@ on:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-    
+    runs-on: ubuntu-latest    
     strategy:
       matrix:
         java-version: [ 11, 16 ]
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up multi JDK
@@ -27,17 +24,28 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build with Maven
-      run: mvn -B package --file pom.xml 
-    
+      run: mvn -B package --file pom.xml     
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
           name: test-results-${{ matrix.java-version }}
           path: target/surefire-reports
-          
-    - name: Publish Unit Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v1.23
-      if: always()
-      with:
+   
+  publish:
+    runs-on: ubuntu-latest 
+    needs: build
+    strategy:
+      matrix:
+        java-version: [ 11, 16 ]
+    steps:  
+     - name: Download Artifacts
+       uses: actions/download-artifact@v2.0.10
+       with:
+        name: test-results-${{ matrix.java-version }}
+        path: ./
+     - name: Publish Unit Test Results
+       uses: EnricoMi/publish-unit-test-result-action@v1.23
+       if: always()
+       with:
           check_name: Unit Test Results
           files: 'target/surefire-reports/*.xml'
