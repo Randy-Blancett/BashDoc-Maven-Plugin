@@ -71,6 +71,8 @@ This is the general author of the file
 This is the email of the author of the file
 ### EXAMPLES
 This is the Examples of how to use the method
+### EXIT
+This documents the exit code for either a script or a function
 ### FILE
 indicates that the comment is for the file as a whole
 ### METHOD
