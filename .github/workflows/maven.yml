@@ -26,7 +26,7 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml     
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v2.2.4
       with:
           name: test-results-${{ matrix.java-version }}
           path: target/surefire-reports
@@ -42,10 +42,10 @@ jobs:
        uses: actions/download-artifact@v2.0.10
        with:
         name: test-results-${{ matrix.java-version }}
-        path: ./
-     - name: Publish Unit Test Results
+        path: ./test-results-${{ matrix.java-version }}
+     - name: Publish Unit Test Results ${{ matrix.java-version }}
        uses: EnricoMi/publish-unit-test-result-action@v1.23
        if: always()
        with:
           check_name: Unit Test Results
-          files: 'target/surefire-reports/*.xml'
+          files: 'test-results-${{ matrix.java-version }}/*.xml'
