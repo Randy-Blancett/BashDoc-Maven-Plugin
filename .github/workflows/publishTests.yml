@@ -9,13 +9,16 @@ jobs:
   publish-test-results:
     name: "Publish Test Results"
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [ 11, 16 ]
     steps:
       - name: Download Test Artifacts
         uses: dawidd6/action-download-artifact@v2.15.0
         with:
           workflow: maven.yml
           workflow_conclusion: success
-          name: test-results
+          name: test-results-${{ matrix.java-version }}
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1.23
