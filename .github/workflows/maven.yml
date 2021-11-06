@@ -28,11 +28,17 @@ jobs:
     - name: Build with Maven
       run: mvn -B clean package --file pom.xml  
       
-    - name: Upload Artifacts
+    - name: Upload Junit Artifacts
       uses: actions/upload-artifact@v2.2.4
       with:
           name: test-results-${{ matrix.java-version }}
           path: target/surefire-reports
+      
+    - name: Upload Code Coverage Artifacts
+      uses: actions/upload-artifact@v2.2.4
+      with:
+          name: code-coverage-results-${{ matrix.java-version }}
+          path: target/jacoco.exec
    
   publish:
     runs-on: ubuntu-latest 
@@ -41,11 +47,17 @@ jobs:
       matrix:
         java-version: [ 11, 16 ]
     steps:  
-     - name: Download Artifacts
+     - name: Download Junit Artifacts
        uses: actions/download-artifact@v2.0.10
        with:
         name: test-results-${{ matrix.java-version }}
-        path: ./${{ matrix.java-version }}/java-test-results
+        path: ./${{ matrix.java-version }}/java-test-results        
+        
+     - name: Download Code Coverage Artifacts
+       uses: actions/download-artifact@v2.0.10
+       with:
+        name:  code-coverage-results-${{ matrix.java-version }}
+        path: ./${{ matrix.java-version }}/code-coverage-results
         
      - name: Publish Unit Test Results ${{ matrix.java-version }}
        uses: EnricoMi/publish-unit-test-result-action@v1.23
