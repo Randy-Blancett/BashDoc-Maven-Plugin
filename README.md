@@ -99,6 +99,13 @@ Current Version of the File
 This indicates that a list of versions with notes about each will follow
 
 ## Version Log
+
+### 1.2.0
+#### New Features
+- Added Exit codes
+
+#### Known Bugs
+
 ### 1.1.1
 #### New Features
 - Update Flatten Pom Plugin so we can deploy to nexus
@@ -109,7 +116,6 @@ This indicates that a list of versions with notes about each will follow
 ### 1.1.0
 #### New Features
 - Added Examples
-- Added Exit codes
 - Added Return Values
 - Add Parameters
 - Wrap Long Lines

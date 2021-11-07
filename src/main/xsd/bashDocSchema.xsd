@@ -41,8 +41,10 @@
 					<element name="Method" type="tns:MethodData"
 						maxOccurs="unbounded" minOccurs="0">
 					</element>
-					<element name="ExitCode" type="tns:ExitCodeData" maxOccurs="unbounded" minOccurs="0"></element>
-					<element name="Source" type="tns:SourceData" maxOccurs="unbounded" minOccurs="0"></element>
+					<element name="ExitCode" type="tns:ExitCodeData"
+						maxOccurs="unbounded" minOccurs="0"></element>
+					<element name="Source" type="tns:SourceData"
+						maxOccurs="unbounded" minOccurs="0"></element>
 				</sequence>
 				<attribute name="FileName" type="string" />
 				<attribute name="Version" type="string" />
@@ -92,10 +94,11 @@
 					<element name="Parameter" type="tns:ParameterData"
 						maxOccurs="unbounded" minOccurs="0">
 					</element>
-					<element name="Example" type="string"
-						maxOccurs="unbounded" minOccurs="0">
+					<element name="Example" type="string" maxOccurs="unbounded"
+						minOccurs="0">
 					</element>
-					<element name="ExitCode" type="tns:ExitCodeData" maxOccurs="unbounded" minOccurs="0"></element>
+					<element name="ExitCode" type="tns:ExitCodeData"
+						maxOccurs="unbounded" minOccurs="0"></element>
 				</sequence>
 			</extension>
 		</complexContent>
@@ -108,7 +111,8 @@
 	</complexType>
 
 	<complexType name="ExitCodeData">
-		<attribute name="code" type="int"></attribute>    
+		<attribute name="code" type="int"></attribute>
+		<attribute name="description" type="string"></attribute>
 	</complexType>
 	<complexType name="SourceData">
 		<attribute name="location" type="string"></attribute>
