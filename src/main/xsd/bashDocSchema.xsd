@@ -39,7 +39,9 @@
 					<element name="Variable" type="tns:VariableData"
 						maxOccurs="unbounded" minOccurs="0" />
 					<element name="Method" type="tns:MethodData"
-						maxOccurs="unbounded" minOccurs="0"></element>
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
+					<element name="Source" type="tns:SourceData" maxOccurs="unbounded" minOccurs="0"></element>
 				</sequence>
 				<attribute name="FileName" type="string" />
 				<attribute name="Version" type="string" />
@@ -100,5 +102,10 @@
 		<attribute name="Position" type="int"></attribute>
 		<attribute name="Descrtiption" type="string"></attribute>
 		<attribute name="Name" type="string"></attribute>
+	</complexType>
+
+	<complexType name="SourceData">
+		<attribute name="location" type="string"></attribute>
+		<attribute name="description" type="string"></attribute>
 	</complexType>
 </schema>
