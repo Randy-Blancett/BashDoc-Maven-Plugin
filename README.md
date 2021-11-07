@@ -97,6 +97,13 @@ Current Version of the File
 This indicates that a list of versions with notes about each will follow
 
 ## Version Log
+### 1.1.1
+#### New Features
+- Update Flatten Pom Plugin so we can deploy to nexus
+
+#### Known Bugs
+
+
 ### 1.1.0
 #### New Features
 - Added Examples
@@ -106,4 +113,5 @@ This indicates that a list of versions with notes about each will follow
 - Wrap Long Lines
 
 #### Known Bugs
+- Issue with flatten pom plugin that won't allow nexus deploy
 
