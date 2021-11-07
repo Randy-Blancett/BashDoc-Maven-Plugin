@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
 import org.darkowl.bash_doc.model.CommonCommentData;
+import org.darkowl.bash_doc.model.ExitCodeData;
 import org.darkowl.bash_doc.model.Library;
 import org.darkowl.bash_doc.model.MethodData;
 import org.darkowl.bash_doc.model.ParameterData;
@@ -139,6 +140,14 @@ public class BashDocTextOutput {
         Files.createDirectories(this.outputDir);
     }
 
+    private String createExitCodeOutput(final int indent, final Integer code, final String description) {
+        if (code == null && description == null)
+            return null;
+        final StringBuilder output = new StringBuilder();
+        outputLine(output, indent, " ", String.format("%2d - ", code), description);
+        return output.toString();
+    }
+
     private void process(final Library library) {
         log.info("Processing Text Output...");
         final String createdString = library.getCreated() == null ? "" : dateFormater.format(library.getCreated());
@@ -150,6 +159,7 @@ public class BashDocTextOutput {
             addHeader(sb, 0, file.getFileName() + " (" + file.getVersion() + ")", createdString);
             process(sb, 0, file);
             process(sb, 1, file.getVersionHistory());
+            processExitCodes(sb, 1, file.getExitCode());
             processVariables(sb, 1, file.getVariable());
             processMethods(sb, 1, file.getMethod());
             writeFileData(file.getFileName().replaceFirst("[.][^.]+$", ".txt"), sb.toString().getBytes());
@@ -183,10 +193,19 @@ public class BashDocTextOutput {
         addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
         process(output, index, (CommonCommentData) data);
         processParameters(output, index + 1, data.getParameter());
+        processExitCodes(output, index + 1, data.getExitCode());
         processExamples(output, index + 1, data.getExample());
     }
 
-    private void processExamples(StringBuilder output, int index, List<String> examples) {
+    private void process(final StringBuilder output, final int index, final VariableData data) {
+        if (data == null)
+            return;
+        addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
+        process(output, index, (CommonCommentData) data);
+        output.append(createPropertyOutput(index, "Default Value", data.getDefault()));
+    }
+
+    private void processExamples(final StringBuilder output, final int index, final List<String> examples) {
         if (examples == null || examples.isEmpty())
             return;
         addHeader(output, index, "Examples", null);
@@ -198,12 +217,13 @@ public class BashDocTextOutput {
 
     }
 
-    private void process(final StringBuilder output, final int index, final VariableData data) {
-        if (data == null)
+    private void processExitCodes(final StringBuilder sb, final int index, final List<ExitCodeData> exitCodes) {
+        if (exitCodes == null || exitCodes.isEmpty())
             return;
-        addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
-        process(output, index, (CommonCommentData) data);
-        output.append(createPropertyOutput(index, "Default Value", data.getDefault()));
+        addHeader(sb, index, "Exit Codes", null);
+        exitCodes.forEach(code -> {
+            sb.append(createExitCodeOutput(index, code.getCode(), code.getDescription()));
+        });
     }
 
     private void processMethods(final StringBuilder sb, final int index, final List<MethodData> methods) {
@@ -214,7 +234,6 @@ public class BashDocTextOutput {
         methods.forEach(method -> {
             process(sb, index + 1, method);
         });
-
     }
 
     private void processParameters(final StringBuilder output, final int index, final List<ParameterData> parameters) {
