@@ -72,4 +72,5 @@ jobs:
        if: always()
        with:
           paths: ./${{ matrix.java-version }}/code-coverage-results/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
           title: Code Coverage Results (Java ${{ matrix.java-version }})
