@@ -106,17 +106,24 @@ public class BashDocTextOutput {
         indentLine(output, indent);
         boolean hasOutput = false;
         for (final String item : data) {
+            if (item == null || item.isBlank())
+                continue;
             final String[] words = item.split("\\b");
             for (final String word : words) {
-                if (hasOutput && output.length() - start + word.length() > LINE_WIDTH) {
-                    if (word.isBlank())
+                if (word == null || word.isBlank())
+                    continue;
+                String cleanWord = word.trim();
+                if (hasOutput && output.length() - start + cleanWord.length() + 1 > LINE_WIDTH) {
+                    if (cleanWord.isBlank())
                         continue;
                     output.append('\n');
                     start = output.length();
                     indentLine(output, indent + 1);
                     hasOutput = false;
                 }
-                output.append(word);
+                if (hasOutput && Character.isLetterOrDigit(cleanWord.charAt(0)))
+                    output.append(' ');
+                output.append(cleanWord);
                 hasOutput = true;
             }
         }

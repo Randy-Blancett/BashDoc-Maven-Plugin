@@ -1,5 +1,6 @@
 package org.darkowl.bash_doc.output.text;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -45,6 +46,29 @@ class BashDocTextOutputTest {
         final String[] testArray = sb.toString().split("\n");
         for (final String testItem : testArray)
             assertTrue(testItem.length() <= BashDocTextOutput.LINE_WIDTH);
+        assertEquals("The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the", testArray[0]);
+        assertEquals("    lazy dog. the quick brown fox jumps over the lazy dog. there are some other", testArray[1]);
+        assertEquals("    things to think about when doing this", testArray[2]);
+    }
+
+    @Test
+    void testOutputLine_bug1() {
+        final StringBuilder sb = new StringBuilder();
+        BashDocTextOutput.outputLine(
+                sb,
+                0,
+                null,
+                "",
+                null,
+                "fox ",
+                "jumps over the lazy dog.",
+                "The quick brown fox jumps over the lazy dog. ",
+                "the quick brown fox jumps over the lazy dog.",
+                "there are some other things to think about when doing this ");
+        final String[] testArray = sb.toString().split("\n");
+        for (final String testItem : testArray)
+            assertTrue(testItem.length() <= BashDocTextOutput.LINE_WIDTH);
+        assertEquals("fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. the", testArray[0]);
     }
 
 }
