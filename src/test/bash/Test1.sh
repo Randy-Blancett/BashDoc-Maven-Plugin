@@ -14,7 +14,9 @@
 #V 0.1.1
 #RELEASE 12Dec2021
 # Things
-#
+#EXIT_CODES
+# 0 | No Errors
+# 1 | Some Error
 
 #VARIABLE
 #PRIVATE
@@ -52,6 +54,9 @@ VAR4=()
 #EXAMPLES
 # Example 1
 # Example 2
+#EXIT_CODES
+# 0 | Everything worked fine
+# 1 | Something went very wrong...
  	function function1() {
  			echo hello world
  	}

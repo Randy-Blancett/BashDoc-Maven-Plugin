@@ -10,6 +10,7 @@ import java.util.Stack;
 import org.darkowl.bash_doc.enums.LineTags;
 import org.darkowl.bash_doc.model.CommonCommentData;
 import org.darkowl.bash_doc.model.ComponentCommentData;
+import org.darkowl.bash_doc.model.ExitCodeData;
 import org.darkowl.bash_doc.model.FileData;
 import org.darkowl.bash_doc.model.MethodData;
 import org.darkowl.bash_doc.model.ParameterData;
@@ -99,6 +100,9 @@ public class FileDataBuilder {
             case EXAMPLES:
                 processExamples(commentStack);
                 break;
+            case EXIT_CODES:
+                processExitCodes(commentStack);
+                break;
             case RELEASE:
                 processRelease(commentStack.peek(), data);
                 break;
@@ -106,7 +110,6 @@ public class FileDataBuilder {
                 processHistoricVersion(commentStack, data);
                 break;
             case COMMENT:
-                // need to wrap comment stack in an object that handles empty stack
                 processComment(commentStack.peek(), data);
                 break;
             case CODE:
@@ -220,6 +223,11 @@ public class FileDataBuilder {
                 ((List<String>) obj.getData()).add(comment);
             break;
         }
+        case EXIT_CODES: {
+            if (obj.getData() instanceof List)
+                processExitCodes((List<ExitCodeData>) obj.getData(), comment);
+            break;
+        }
         default:
             if (obj.getData() instanceof CommonCommentData) {
                 final CommonCommentData data = (CommonCommentData) obj.getData();
@@ -242,6 +250,49 @@ public class FileDataBuilder {
             final MethodData dataType = (MethodData) data;
             setStack(commentStack, new StackObj<>(LineTags.EXAMPLES, dataType.getExample()));
         }
+    }
+
+    static void processExitCodes(final CommentStack commentStack) {
+        if (commentStack == null)
+            return;
+        final StackObj<?> obj = commentStack.peek();
+        if (obj == null)
+            return;
+        final Object data = obj.getData();
+        if (data instanceof MethodData) {
+            final MethodData dataType = (MethodData) data;
+            setStack(commentStack, new StackObj<>(LineTags.EXIT_CODES, dataType.getExitCode()));
+            return;
+        }
+
+        if (data instanceof FileData) {
+            final FileData dataType = (FileData) data;
+            setStack(commentStack, new StackObj<>(LineTags.EXIT_CODES, dataType.getExitCode()));
+        }
+    }
+
+    private static void processExitCodes(final List<ExitCodeData> data, final String comment) {
+        if (comment == null || comment.isBlank())
+            return;
+        final String[] exitData = comment.split("\\|");
+        if (exitData.length < 1)
+            return;
+        final ExitCodeData output = new ExitCodeData();
+        final String number = exitData[0].trim();
+        Integer code = null;
+        try {
+            if (number.isBlank() && exitData.length < 2)
+                return;
+            if (!number.isBlank())
+                code = Integer.parseInt(number);
+        } catch (final NumberFormatException e) {
+            return;
+        }
+        data.add(output);
+        output.setCode(code);
+        if (exitData.length < 2)
+            return;
+        output.setDescription(exitData[1].trim());
     }
 
     private static void processHistoricVersion(final Stack<StackObj<?>> stack, final String data) {
