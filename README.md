@@ -101,6 +101,7 @@ This indicates that a list of versions with notes about each will follow
 ## Version Log
 
 ### 1.2.0
+### 11NOV2021
 #### New Features
 - Added Exit codes
 

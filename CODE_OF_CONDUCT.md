@@ -2,10 +2,7 @@
 
 ## Our Pledge
 
-We as members, contributors, and leaders pledge to be adults, we follow the 
-creed that Sticks and Stones May break my bones but words will never hurt me.
-As long as your comments are moving the project forward and are true we do not
-care if they hurt peoples feelings.
+We as members, contributors, and leaders pledge to be adults.
 
 ## Our Standards
 
@@ -20,8 +17,7 @@ Examples of unacceptable behavior include:
 
 * Comments that do not pertain to the project or are not constructive
 to moving the project forward.
-* Complaining about how you feel about other peoples input (facts don't 
-care about your feelings)
+* Complaining about how you feel about other peoples input.
 
 ## Enforcement Responsibilities
 
