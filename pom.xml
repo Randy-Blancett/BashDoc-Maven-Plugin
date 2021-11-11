@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.randy-blancett</groupId>
   <artifactId>bashDoc-maven-plugin</artifactId>
-  <version>1.2.0-SNAPSHOT</version>
+  <version>1.2.0</version>
   <packaging>maven-plugin</packaging>
   <name>bashDoc-maven-plugin Maven Plugin</name>
   <description>This project allows you to create documentation of your bash scripts similar to java doc</description>
@@ -33,7 +33,7 @@
   <scm>
     <connection>scm:git:https://github.com/Randy-Blancett/BashDoc-Maven-Plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Randy-Blancett/BashDoc-Maven-Plugin.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>1.2.0</tag>
     <url>https://github.com/Randy-Blancett/BashDoc-Maven-Plugin</url>
   </scm>
   <distributionManagement>
