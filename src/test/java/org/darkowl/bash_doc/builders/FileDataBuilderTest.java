@@ -96,6 +96,8 @@ class FileDataBuilderTest {
         assertEquals("Example 1", method.getExample().get(0));
         assertEquals("Example 2", method.getExample().get(1));
 
+        assertEquals("This will return Hello World.", method.getReturn());
+
         assertEquals(2, method.getExitCode().size());
         exitCode = method.getExitCode().get(0);
         assertEquals(0, exitCode.getCode());

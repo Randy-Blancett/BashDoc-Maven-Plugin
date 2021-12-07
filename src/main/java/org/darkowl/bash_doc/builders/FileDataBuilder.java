@@ -103,6 +103,9 @@ public class FileDataBuilder {
             case EXIT_CODES:
                 processExitCodes(commentStack);
                 break;
+            case RETURN:
+                processReturn(commentStack);
+                break;
             case RELEASE:
                 processRelease(commentStack.peek(), data);
                 break;
@@ -228,6 +231,11 @@ public class FileDataBuilder {
                 processExitCodes((List<ExitCodeData>) obj.getData(), comment);
             break;
         }
+        case RETURN: {
+            if (obj.getData() instanceof MethodData)
+                ((MethodData) obj.getData()).setReturn(comment);
+            break;
+        }
         default:
             if (obj.getData() instanceof CommonCommentData) {
                 final CommonCommentData data = (CommonCommentData) obj.getData();
@@ -268,6 +276,20 @@ public class FileDataBuilder {
         if (data instanceof FileData) {
             final FileData dataType = (FileData) data;
             setStack(commentStack, new StackObj<>(LineTags.EXIT_CODES, dataType.getExitCode()));
+        }
+    }
+
+    static void processReturn(final CommentStack commentStack) {
+        if (commentStack == null)
+            return;
+        final StackObj<?> obj = commentStack.peek();
+        if (obj == null)
+            return;
+        final Object data = obj.getData();
+        if (data instanceof MethodData) {
+            final MethodData dataType = (MethodData) data;
+            setStack(commentStack, new StackObj<>(LineTags.RETURN, dataType));
+            return;
         }
     }
 

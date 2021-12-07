@@ -200,6 +200,7 @@ public class BashDocTextOutput {
         addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
         process(output, index, (CommonCommentData) data);
         processParameters(output, index + 1, data.getParameter());
+        processReturn(output, index + 1, data.getReturn());
         processExitCodes(output, index + 1, data.getExitCode());
         processExamples(output, index + 1, data.getExample());
     }
@@ -222,6 +223,13 @@ public class BashDocTextOutput {
             outputLine(output, index, " ", example);
         });
 
+    }
+
+    private void processReturn(final StringBuilder sb, final int indent, final String description) {
+        if (description == null || description.isEmpty())
+            return;
+        addHeader(sb, indent, "Return", null);
+        outputLine(sb, indent, description);
     }
 
     private void processExitCodes(final StringBuilder sb, final int index, final List<ExitCodeData> exitCodes) {

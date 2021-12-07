@@ -51,6 +51,9 @@ VAR4=()
 # $1 | Flag | Flag Desciption
 # $2 | Long Command | Long Command Description
 #
+#RETURN
+# This will return Hello World.
+#
 #EXAMPLES
 # Example 1
 # Example 2
