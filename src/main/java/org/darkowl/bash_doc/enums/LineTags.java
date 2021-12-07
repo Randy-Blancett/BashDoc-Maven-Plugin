@@ -31,14 +31,17 @@ public enum LineTags {
         for (final LineTags tag : LineTags.values()) {
             if (tag.tag == null)
                 continue;
-            if (MatchTypes.EQ == tag.type) {
+            switch (tag.type) {
+            case EQ:
                 if (tag.tag.equals(check))
                     return tag;
-            } else if (MatchTypes.START == tag.type)
+                break;
+            case START:
                 if (check.startsWith(tag.tag))
                     return tag;
+                break;
+            }
         }
-
         return COMMENT;
     }
 
