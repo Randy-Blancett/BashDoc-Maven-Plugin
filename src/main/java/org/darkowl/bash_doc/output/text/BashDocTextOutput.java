@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
@@ -41,6 +40,14 @@ public class BashDocTextOutput {
             outputLine(output, indent, line);
         }
 
+        return output.toString();
+    }
+
+    static String createExitCodeOutput(final int indent, final Integer code, final String description) {
+        if (code == null && description == null)
+            return null;
+        final StringBuilder output = new StringBuilder();
+        outputLine(output, indent, " ", code == null ? "" : String.format("%2d - ", code), description);
         return output.toString();
     }
 
@@ -110,10 +117,6 @@ public class BashDocTextOutput {
         }
     }
 
-    static void outputLine(final StringBuilder output, final int indent, final String... data) {
-        outputLine(output, indent, true, data);
-    }
-
     static void outputLine(final StringBuilder output,
             final int indent,
             final boolean processSpaces,
@@ -152,48 +155,15 @@ public class BashDocTextOutput {
         output.append('\n');
     }
 
+    static void outputLine(final StringBuilder output, final int indent, final String... data) {
+        outputLine(output, indent, true, data);
+    }
+
     private static String padRight(final String text, final int totalLength) {
         final StringBuilder output = new StringBuilder(text == null ? "" : text);
         while (output.length() < totalLength)
             output.append(' ');
         return output.toString();
-    }
-
-    private final Log log;
-    private final Path outputDir;
-
-    public BashDocTextOutput(final Log log, final Path outputDir) throws IOException {
-        this.outputDir = outputDir.resolve("text");
-        this.log = log;
-        Files.createDirectories(this.outputDir);
-    }
-
-    static String createExitCodeOutput(final int indent, final Integer code, final String description) {
-        if (code == null && description == null)
-            return null;
-        final StringBuilder output = new StringBuilder();
-        outputLine(output, indent, " ", code == null ? "" : String.format("%2d - ", code), description);
-        return output.toString();
-    }
-
-    void process(final Library library) {
-        log.info("Processing Text Output...");
-        if (library == null)
-            return;
-        final String createdString = library.getCreated() == null ? "" : dateFormater.format(library.getCreated());
-        library.getFiles().forEach(file -> {
-            if (file == null)
-                return;
-            log.debug("Processing file: " + file.getFileName());
-            final StringBuilder sb = new StringBuilder();
-            addHeader(sb, 0, file.getFileName() + " (" + file.getVersion() + ")", createdString);
-            process(sb, 0, file);
-            process(sb, 1, file.getVersionHistory());
-            processExitCodes(sb, 1, file.getExitCode());
-            processVariables(sb, 1, file.getVariable());
-            processMethods(sb, 1, file.getMethod());
-            writeFileData(file.getFileName().replaceFirst("[.][^.]+$", ".txt"), sb.toString().getBytes());
-        });
     }
 
     static void process(final StringBuilder output, final int index, final CommonCommentData commentData) {
@@ -218,6 +188,36 @@ public class BashDocTextOutput {
             addHeader(output, index + 1, version.getVersion(), version.getRelease());
             process(output, index + 1, version);
         }
+    }
+
+    private final Log log;
+
+    private final Path outputDir;
+
+    public BashDocTextOutput(final Log log, final Path outputDir) throws IOException {
+        this.outputDir = outputDir.resolve("text");
+        this.log = log;
+        Files.createDirectories(this.outputDir);
+    }
+
+    void process(final Library library) {
+        log.info("Processing Text Output...");
+        if (library == null)
+            return;
+        final String createdString = library.getCreated() == null ? "" : dateFormater.format(library.getCreated());
+        library.getFiles().forEach(file -> {
+            if (file == null)
+                return;
+            log.debug("Processing file: " + file.getFileName());
+            final StringBuilder sb = new StringBuilder();
+            addHeader(sb, 0, file.getFileName() + " (" + file.getVersion() + ")", createdString);
+            process(sb, 0, file);
+            process(sb, 1, file.getVersionHistory());
+            processExitCodes(sb, 1, file.getExitCode());
+            processVariables(sb, 1, file.getVariable());
+            processMethods(sb, 1, file.getMethod());
+            writeFileData(file.getFileName().replaceFirst("[.][^.]+$", ".txt"), sb.toString().getBytes());
+        });
     }
 
     private void process(final StringBuilder output, final int index, final MethodData data) {
