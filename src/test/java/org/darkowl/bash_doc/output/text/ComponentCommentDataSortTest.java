@@ -10,6 +10,7 @@ import org.darkowl.bash_doc.model.ComponentCommentData;
 import org.darkowl.bash_doc.model.MethodData;
 import org.darkowl.bash_doc.model.ScopeType;
 import org.darkowl.bash_doc.model.VariableData;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -57,6 +58,15 @@ class ComponentCommentDataSortTest {
             assertEquals(arg1, l1.get(1));
             assertEquals(arg1, l2.get(1));
         }
+    }
+
+    @Test
+    void testCompare_SpecialData() {
+        final ComponentCommentDataSort sort = new ComponentCommentDataSort();
+        final MethodData method = new MethodData();
+        assertEquals(0, sort.compare(null, null));
+        assertEquals(1, sort.compare(null, method));
+        assertEquals(-1, sort.compare(method, null));
     }
 
     @ParameterizedTest

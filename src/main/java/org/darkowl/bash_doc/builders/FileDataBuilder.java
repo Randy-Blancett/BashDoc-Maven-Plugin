@@ -279,20 +279,6 @@ public class FileDataBuilder {
         }
     }
 
-    static void processReturn(final CommentStack commentStack) {
-        if (commentStack == null)
-            return;
-        final StackObj<?> obj = commentStack.peek();
-        if (obj == null)
-            return;
-        final Object data = obj.getData();
-        if (data instanceof MethodData) {
-            final MethodData dataType = (MethodData) data;
-            setStack(commentStack, new StackObj<>(LineTags.RETURN, dataType));
-            return;
-        }
-    }
-
     private static void processExitCodes(final List<ExitCodeData> data, final String comment) {
         if (comment == null || comment.isBlank())
             return;
@@ -404,6 +390,20 @@ public class FileDataBuilder {
             break;
         default:
             break;
+        }
+    }
+
+    static void processReturn(final CommentStack commentStack) {
+        if (commentStack == null)
+            return;
+        final StackObj<?> obj = commentStack.peek();
+        if (obj == null)
+            return;
+        final Object data = obj.getData();
+        if (data instanceof MethodData) {
+            final MethodData dataType = (MethodData) data;
+            setStack(commentStack, new StackObj<>(LineTags.RETURN, dataType));
+            return;
         }
     }
 

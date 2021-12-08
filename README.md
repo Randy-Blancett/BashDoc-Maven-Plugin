@@ -106,6 +106,7 @@ This indicates that a list of versions with notes about each will follow
 ### ?????
 #### New Features
 - Add ability to document return data from a method
+- Fixed issues in how this handles non-text charators when formating lines
 
 ### 1.2.0
 ### 11NOV2021
