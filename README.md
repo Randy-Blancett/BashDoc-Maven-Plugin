@@ -85,6 +85,8 @@ Indicates that the code section was intended to be protected
 Indicates that the code section was intended to be public
 ### RELEASE
 This is the date of a given release
+### RETURN
+This will describe the Return from the Method (if there is one)
 ### V
 This is used under the VERSION tag and tells the name of the version to be described
 
@@ -99,6 +101,11 @@ Current Version of the File
 This indicates that a list of versions with notes about each will follow
 
 ## Version Log
+
+### 1.3.0
+### ?????
+#### New Features
+- Add ability to document return data from a method
 
 ### 1.2.0
 ### 11NOV2021

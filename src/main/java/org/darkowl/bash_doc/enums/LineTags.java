@@ -7,6 +7,7 @@ public enum LineTags {
     COMMENT(null, null, 100),
     EXAMPLES("EXAMPLES", MatchTypes.EQ, 2),
     EXIT_CODES("EXIT_CODES", MatchTypes.EQ, 2),
+    RETURN("RETURN", MatchTypes.EQ, 2),
     FILE("FILE", MatchTypes.EQ, 1),
     HISTORIC_VERSION("V ", MatchTypes.START, 3),
     METHOD("METHOD", MatchTypes.EQ, 1),

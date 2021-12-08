@@ -98,8 +98,10 @@
 						minOccurs="0">
 					</element>
 					<element name="ExitCode" type="tns:ExitCodeData"
-						maxOccurs="unbounded" minOccurs="0"></element>
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
 				</sequence>
+				<attribute name="Return" type="string"></attribute>
 			</extension>
 		</complexContent>
 	</complexType>
