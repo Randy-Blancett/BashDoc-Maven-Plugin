@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
@@ -29,8 +30,8 @@ public class BashDocTextOutput {
                 .append(createHeaderLine(indent));
     }
 
-    private static String createCommentBlock(final int indent, final String comment) {
-        if (comment == null)
+    static String createCommentBlock(final int indent, final String comment) {
+        if (comment == null || comment.isBlank())
             return "";
         final String[] commentLines = comment.split("\n");
         final StringBuilder output = new StringBuilder();
@@ -67,22 +68,29 @@ public class BashDocTextOutput {
         return output.toString();
     }
 
-    private static String createParameterOutput(final int indent,
+    static String createParameterOutput(final int indent,
             final Integer position,
             final String name,
             final String description) {
         if (position == null && name == null && description == null)
             return null;
         final StringBuilder output = new StringBuilder();
-        outputLine(output, indent, " ", String.format("%02d - ", position), padRight(name, 15), description);
+        outputLine(
+                output,
+                indent,
+                false,
+                " ",
+                position == null ? "" : String.format("%02d -", position),
+                padRight(name, 15),
+                description);
         return output.toString();
     }
 
-    private static String createPropertyOutput(final int indent, final String key, final String value) {
+    static String createPropertyOutput(final int indent, final String key, final String value) {
         if (key == null || value == null)
             return "";
         final StringBuilder output = new StringBuilder();
-        outputLine(output, indent, " - ", key, " : ", value);
+        outputLine(output, indent, false, " -", key, ":", value);
         return output.toString();
     }
 
@@ -103,17 +111,30 @@ public class BashDocTextOutput {
     }
 
     static void outputLine(final StringBuilder output, final int indent, final String... data) {
+        outputLine(output, indent, true, data);
+    }
+
+    static void outputLine(final StringBuilder output,
+            final int indent,
+            final boolean processSpaces,
+            final String... data) {
         long start = output.length();
         indentLine(output, indent);
         boolean hasOutput = false;
         for (final String item : data) {
             if (item == null || item.isBlank())
                 continue;
-            final String[] words = item.split("\\b");
+            String[] words;
+            if (processSpaces)
+                words = item.split("\\b");
+            else {
+                words = new String[1];
+                words[0] = item;
+            }
             for (final String word : words) {
                 if (word == null || word.isBlank())
                     continue;
-                String cleanWord = word.trim();
+                final String cleanWord = processSpaces ? word.trim() : word;
                 if (hasOutput && output.length() - start + cleanWord.length() + 1 > LINE_WIDTH) {
                     if (cleanWord.isBlank())
                         continue;
@@ -132,7 +153,7 @@ public class BashDocTextOutput {
     }
 
     private static String padRight(final String text, final int totalLength) {
-        final StringBuilder output = new StringBuilder(text);
+        final StringBuilder output = new StringBuilder(text == null ? "" : text);
         while (output.length() < totalLength)
             output.append(' ');
         return output.toString();
@@ -147,16 +168,18 @@ public class BashDocTextOutput {
         Files.createDirectories(this.outputDir);
     }
 
-    private String createExitCodeOutput(final int indent, final Integer code, final String description) {
+    static String createExitCodeOutput(final int indent, final Integer code, final String description) {
         if (code == null && description == null)
             return null;
         final StringBuilder output = new StringBuilder();
-        outputLine(output, indent, " ", String.format("%2d - ", code), description);
+        outputLine(output, indent, " ", code == null ? "" : String.format("%2d - ", code), description);
         return output.toString();
     }
 
-    private void process(final Library library) {
+    void process(final Library library) {
         log.info("Processing Text Output...");
+        if (library == null)
+            return;
         final String createdString = library.getCreated() == null ? "" : dateFormater.format(library.getCreated());
         library.getFiles().forEach(file -> {
             if (file == null)
@@ -173,7 +196,7 @@ public class BashDocTextOutput {
         });
     }
 
-    private void process(final StringBuilder output, final int index, final CommonCommentData commentData) {
+    static void process(final StringBuilder output, final int index, final CommonCommentData commentData) {
         if (commentData == null)
             return;
         output.append(createCommentBlock(index, commentData.getComment()))
@@ -181,17 +204,20 @@ public class BashDocTextOutput {
                 .append(createPropertyOutput(index, "Author Email", commentData.getAuthorEmail()));
     }
 
-    private void process(final StringBuilder output, final int index, final List<VersionHistoryData> versionHistory) {
+    static void process(final StringBuilder output, final int index, final List<VersionHistoryData> versionHistory) {
         if (versionHistory == null)
             return;
-        addHeader(output, index, "Version History", null);
-        versionHistory.forEach(version -> {
-            if (version == null)
-                return;
+        boolean isFirst = true;
+        for (final VersionHistoryData version : versionHistory) {
+            if (version == null || version.getVersion() == null || version.getVersion().isBlank())
+                continue;
+            if (isFirst) {
+                addHeader(output, index, "Version History", null);
+                isFirst = false;
+            }
             addHeader(output, index + 1, version.getVersion(), version.getRelease());
             process(output, index + 1, version);
-        });
-
+        }
     }
 
     private void process(final StringBuilder output, final int index, final MethodData data) {
@@ -225,13 +251,6 @@ public class BashDocTextOutput {
 
     }
 
-    private void processReturn(final StringBuilder sb, final int indent, final String description) {
-        if (description == null || description.isEmpty())
-            return;
-        addHeader(sb, indent, "Return", null);
-        outputLine(sb, indent, description);
-    }
-
     private void processExitCodes(final StringBuilder sb, final int index, final List<ExitCodeData> exitCodes) {
         if (exitCodes == null || exitCodes.isEmpty())
             return;
@@ -258,6 +277,13 @@ public class BashDocTextOutput {
         parameters.forEach(param -> {
             output.append(createParameterOutput(index, param.getPosition(), param.getName(), param.getDescrtiption()));
         });
+    }
+
+    private void processReturn(final StringBuilder sb, final int indent, final String description) {
+        if (description == null || description.isEmpty())
+            return;
+        addHeader(sb, indent, "Return", null);
+        outputLine(sb, indent, description);
     }
 
     private void processVariables(final StringBuilder sb, final int index, final List<VariableData> variables) {
