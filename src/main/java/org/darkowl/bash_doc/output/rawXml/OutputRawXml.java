@@ -16,7 +16,7 @@ import org.darkowl.bash_doc.output.OutputFormatter;
 public class OutputRawXml implements OutputFormatter {
 
     @Override
-    public void process(Log log, Path outputDir, Library library) {
+    public void process(final Log log, final Path outputDir, final Library library) {
         try {
             final JAXBContext context = JAXBContext.newInstance(Library.class);
             final Marshaller marshaller = context.createMarshaller();

@@ -5,13 +5,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.Date;
 import java.util.Map;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -22,7 +17,6 @@ import org.darkowl.bash_doc.builders.FileDataBuilder;
 import org.darkowl.bash_doc.enums.OutputType;
 import org.darkowl.bash_doc.model.Library;
 import org.darkowl.bash_doc.output.OutputManager;
-import org.darkowl.bash_doc.output.text.BashDocTextOutput;
 
 @Mojo(name = "document", defaultPhase = LifecyclePhase.PACKAGE)
 public class BashDocPlugin extends AbstractMojo {
@@ -36,18 +30,11 @@ public class BashDocPlugin extends AbstractMojo {
     @Parameter(defaultValue = "true", property = "outputRawXml", required = true)
     private boolean outputRawXml;
 
-    public void setOutputRawXml(boolean outputRawXml) {
-        this.outputRawXml = outputRawXml;
-    }
-
-    public void setOutputText(boolean outputText) {
-        this.outputText = outputText;
-    }
-
     @Parameter(defaultValue = "true", property = "outputText", required = true)
     private boolean outputText;
 
     Path srcDirectory = null;
+
     @Parameter(defaultValue = "${project.build.directory}/bash", property = "sourceDir", required = true)
     private String srcDirectoryStr;
 
@@ -87,8 +74,6 @@ public class BashDocPlugin extends AbstractMojo {
         }
         OutputManager.init(Map.of(OutputType.RAW_XML, outputRawXml, OutputType.TEXT, outputText));
         OutputManager.output(getLog(), outputDirectory, library);
-        if (outputText)
-            BashDocTextOutput.output(getLog(), outputDirectory, library);
     }
 
     public Library getLibrary() {
@@ -122,6 +107,14 @@ public class BashDocPlugin extends AbstractMojo {
 
     public void setOutputDirectory(final Path outputDirectory) {
         this.outputDirectory = outputDirectory;
+    }
+
+    public void setOutputRawXml(final boolean outputRawXml) {
+        this.outputRawXml = outputRawXml;
+    }
+
+    public void setOutputText(final boolean outputText) {
+        this.outputText = outputText;
     }
 
     public void setSrcDirectory(final Path srcDirectory) {

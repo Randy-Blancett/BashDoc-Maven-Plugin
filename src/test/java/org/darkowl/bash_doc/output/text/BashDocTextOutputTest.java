@@ -33,7 +33,8 @@ class BashDocTextOutputTest {
         lib.getFiles().add(data);
         final Path outputDirectory = Paths.get("target/testOutput/doc");
         Files.createDirectories(outputDirectory);
-        BashDocTextOutput.output(new SystemStreamLog(), outputDirectory, lib);
+        BashDocTextOutput output = new BashDocTextOutput();
+        output.process(new SystemStreamLog(), outputDirectory, lib);
         assertTrue(
                 Files.exists(outputDirectory.resolve("text").resolve("Test1.txt")),
                 outputDirectory.resolve("text/Test1.sh").toAbsolutePath().toString());
@@ -196,12 +197,12 @@ class BashDocTextOutputTest {
      */
     void testProcess_Special() throws IOException {
         final Path outputDirectory = Paths.get("target/testOutput/doc");
-        final BashDocTextOutput output = new BashDocTextOutput(new SystemStreamLog(), outputDirectory);
-        output.process(null);
+        final BashDocTextOutput output = new BashDocTextOutput();
+        output.process(new SystemStreamLog(), outputDirectory, null);
         final Library lib = new Library();
         lib.setCreated(new Date());
         lib.getFiles().add(null);
-        output.process(lib);
+        output.process(new SystemStreamLog(), outputDirectory, lib);
     }
 
     @Test

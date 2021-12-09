@@ -6,11 +6,11 @@ import org.darkowl.bash_doc.output.text.BashDocTextOutput;
 
 public enum OutputType {
     RAW_XML(new OutputRawXml()),
-    TEXT(null);
+    TEXT(new BashDocTextOutput());
 
     private final OutputFormatter formatter;
 
-    OutputType(OutputRawXml object) {
+    OutputType(final OutputFormatter object) {
         formatter = object;
     }
 

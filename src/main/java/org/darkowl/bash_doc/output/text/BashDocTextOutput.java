@@ -17,7 +17,7 @@ import org.darkowl.bash_doc.model.VariableData;
 import org.darkowl.bash_doc.model.VersionHistoryData;
 import org.darkowl.bash_doc.output.OutputFormatter;
 
-public class BashDocTextOutput {
+public class BashDocTextOutput implements OutputFormatter {
     private static final ComponentCommentDataSort COMPONENT_COMMENT_DATA_SORTER = new ComponentCommentDataSort();
     private static final DateFormat dateFormater = DateFormat.getDateTimeInstance();
     public static final int INDENT_SIZE = 4;
@@ -106,16 +106,6 @@ public class BashDocTextOutput {
         for (int i = 0; i < indent; i++)
             for (int i2 = 0; i2 < INDENT_SIZE; i2++)
                 output.append(' ');
-    }
-
-    public static void output(final Log log, final Path outputDirectory, final Library library) {
-        BashDocTextOutput me;
-        try {
-            me = new BashDocTextOutput(log, outputDirectory);
-            me.process(library);
-        } catch (final IOException e) {
-            log.error("failed to process text output.", e);
-        }
     }
 
     static void outputLine(final StringBuilder output,
@@ -278,15 +268,9 @@ public class BashDocTextOutput {
         }
     }
 
-    private final Log log;
+    private Log log;
 
-    private final Path outputDir;
-
-    public BashDocTextOutput(final Log log, final Path outputDir) throws IOException {
-        this.outputDir = outputDir.resolve("text");
-        this.log = log;
-        Files.createDirectories(this.outputDir);
-    }
+    private Path outputDir;
 
     void process(final Library library) {
         log.info("Processing Text Output...");
@@ -306,6 +290,14 @@ public class BashDocTextOutput {
             processMethods(sb, 1, file.getMethod());
             writeFileData(file.getFileName().replaceFirst("[.][^.]+$", ".txt"), sb.toString().getBytes());
         });
+    }
+
+    @Override
+    public void process(final Log log, final Path outputDir, final Library library) throws IOException {
+        this.outputDir = outputDir.resolve("text");
+        this.log = log;
+        Files.createDirectories(this.outputDir);
+        process(library);
     }
 
     private void writeFileData(final String fileName, final byte[] content) {
