@@ -205,6 +205,14 @@ class BashDocTextOutputTest {
     }
 
     @Test
+    void testProcess_VariableData_Special() {
+        final StringBuilder sb = new StringBuilder();
+        final VariableData data = null;
+        BashDocTextOutput.process(sb, 0, data);
+        assertEquals("", sb.toString());
+    }
+
+    @Test
     void testProcess_VersionHistory() {
         for (int i = 0; i < 6; i++) {
             StringBuilder sb = new StringBuilder();
@@ -288,94 +296,9 @@ class BashDocTextOutputTest {
     }
 
     @Test
-    void testProcessVariables() {
-        for (int i = 0; i < 6; i++) {
-            StringBuilder sb = new StringBuilder();
-            List<VariableData> data = null;
-            BashDocTextOutput.processVariables(sb, i, data);
-            assertEquals("", sb.toString());
-
-            data = new ArrayList<>();
-            BashDocTextOutput.processVariables(sb, i, data);
-            assertEquals("", sb.toString());
-
-            data.add(null);
-            BashDocTextOutput.processVariables(sb, i, data);
-            assertEquals("", sb.toString());
-
-            VariableData item = new VariableData();
-            data.add(item);
-            BashDocTextOutput.processVariables(sb, i, data);
-            assertEquals("", sb.toString());
-
-            item.setName(" ");
-            BashDocTextOutput.processVariables(sb, i, data);
-            assertEquals("", sb.toString());
-
-            item.setName("Var1");
-            BashDocTextOutput.processVariables(sb, i, data);
-            testPerLine(sb.toString().replace("*", "").trim(), "Variables", "", "", "", "Var1");
-
-            sb = new StringBuilder();
-            item = new VariableData();
-            data.add(item);
-            item.setName("Var2");
-            item.setAuthor("Author 1");
-            item.setAuthorEmail("Author1@email.com");
-            item.setComment("This is the Second Variable.");
-            item.setDefault("Data");
-            item.setType(VariableType.STRING);
-            BashDocTextOutput.processVariables(sb, i, data);
-            testPerLine(
-                    sb.toString().replace("*", "").trim(),
-                    "Variables",
-                    "",
-                    "",
-                    "",
-                    "Var1",
-                    "",
-                    "",
-                    "",
-                    "Var2",
-                    "",
-                    "This is the Second Variable.",
-                    "- Author: Author 1",
-                    "- Author Email: Author1@email.com",
-                    "- Default Value: Data");
-
-            sb = new StringBuilder();
-            item.setScope(ScopeType.PROTECTED);
-            BashDocTextOutput.processVariables(sb, 0, data);
-            testPerLine(
-                    sb.toString().replace("*", "").trim(),
-                    "Variables",
-                    "",
-                    "",
-                    "",
-                    "Var2                                                           PROTECTED",
-                    "",
-                    "This is the Second Variable.",
-                    "- Author: Author 1",
-                    "- Author Email: Author1@email.com",
-                    "- Default Value: Data",
-                    "",
-                    "",
-                    "Var1");
-        }
-    }
-
-    @Test
-    void testProcess_VariableData_Special() {
-        StringBuilder sb = new StringBuilder();
-        VariableData data = null;
-        BashDocTextOutput.process(sb, 0, data);
-        assertEquals("", sb.toString());
-    }
-
-    @Test
     void testProcessExamples() {
         for (int i = 0; i < 6; i++) {
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
             List<String> data = null;
             BashDocTextOutput.processExamples(sb, i, data);
             assertEquals("", sb.toString());
@@ -488,6 +411,83 @@ class BashDocTextOutputTest {
                     "",
                     "Return Some Value...");
 
+        }
+    }
+
+    @Test
+    void testProcessVariables() {
+        for (int i = 0; i < 6; i++) {
+            StringBuilder sb = new StringBuilder();
+            List<VariableData> data = null;
+            BashDocTextOutput.processVariables(sb, i, data);
+            assertEquals("", sb.toString());
+
+            data = new ArrayList<>();
+            BashDocTextOutput.processVariables(sb, i, data);
+            assertEquals("", sb.toString());
+
+            data.add(null);
+            BashDocTextOutput.processVariables(sb, i, data);
+            assertEquals("", sb.toString());
+
+            VariableData item = new VariableData();
+            data.add(item);
+            BashDocTextOutput.processVariables(sb, i, data);
+            assertEquals("", sb.toString());
+
+            item.setName(" ");
+            BashDocTextOutput.processVariables(sb, i, data);
+            assertEquals("", sb.toString());
+
+            item.setName("Var1");
+            BashDocTextOutput.processVariables(sb, i, data);
+            testPerLine(sb.toString().replace("*", "").trim(), "Variables", "", "", "", "Var1");
+
+            sb = new StringBuilder();
+            item = new VariableData();
+            data.add(item);
+            item.setName("Var2");
+            item.setAuthor("Author 1");
+            item.setAuthorEmail("Author1@email.com");
+            item.setComment("This is the Second Variable.");
+            item.setDefault("Data");
+            item.setType(VariableType.STRING);
+            BashDocTextOutput.processVariables(sb, i, data);
+            testPerLine(
+                    sb.toString().replace("*", "").trim(),
+                    "Variables",
+                    "",
+                    "",
+                    "",
+                    "Var1",
+                    "",
+                    "",
+                    "",
+                    "Var2",
+                    "",
+                    "This is the Second Variable.",
+                    "- Author: Author 1",
+                    "- Author Email: Author1@email.com",
+                    "- Default Value: Data");
+
+            sb = new StringBuilder();
+            item.setScope(ScopeType.PROTECTED);
+            BashDocTextOutput.processVariables(sb, 0, data);
+            testPerLine(
+                    sb.toString().replace("*", "").trim(),
+                    "Variables",
+                    "",
+                    "",
+                    "",
+                    "Var2                                                           PROTECTED",
+                    "",
+                    "This is the Second Variable.",
+                    "- Author: Author 1",
+                    "- Author Email: Author1@email.com",
+                    "- Default Value: Data",
+                    "",
+                    "",
+                    "Var1");
         }
     }
 }

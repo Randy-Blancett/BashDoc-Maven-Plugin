@@ -190,36 +190,6 @@ public class BashDocTextOutput {
         }
     }
 
-    private final Log log;
-
-    private final Path outputDir;
-
-    public BashDocTextOutput(final Log log, final Path outputDir) throws IOException {
-        this.outputDir = outputDir.resolve("text");
-        this.log = log;
-        Files.createDirectories(this.outputDir);
-    }
-
-    void process(final Library library) {
-        log.info("Processing Text Output...");
-        if (library == null)
-            return;
-        final String createdString = library.getCreated() == null ? "" : dateFormater.format(library.getCreated());
-        library.getFiles().forEach(file -> {
-            if (file == null)
-                return;
-            log.debug("Processing file: " + file.getFileName());
-            final StringBuilder sb = new StringBuilder();
-            addHeader(sb, 0, file.getFileName() + " (" + file.getVersion() + ")", createdString);
-            process(sb, 0, file);
-            process(sb, 1, file.getVersionHistory());
-            processExitCodes(sb, 1, file.getExitCode());
-            processVariables(sb, 1, file.getVariable());
-            processMethods(sb, 1, file.getMethod());
-            writeFileData(file.getFileName().replaceFirst("[.][^.]+$", ".txt"), sb.toString().getBytes());
-        });
-    }
-
     private static void process(final StringBuilder output, final int index, final MethodData data) {
         if (data == null || data.getName() == null || data.getName().isBlank())
             return;
@@ -243,7 +213,7 @@ public class BashDocTextOutput {
         if (examples == null || examples.isEmpty())
             return;
         boolean firstRun = true;
-        for (String example : examples) {
+        for (final String example : examples) {
             if (example == null || example.isBlank())
                 continue;
             if (firstRun) {
@@ -305,6 +275,36 @@ public class BashDocTextOutput {
             }
             process(sb, index + 1, var);
         }
+    }
+
+    private final Log log;
+
+    private final Path outputDir;
+
+    public BashDocTextOutput(final Log log, final Path outputDir) throws IOException {
+        this.outputDir = outputDir.resolve("text");
+        this.log = log;
+        Files.createDirectories(this.outputDir);
+    }
+
+    void process(final Library library) {
+        log.info("Processing Text Output...");
+        if (library == null)
+            return;
+        final String createdString = library.getCreated() == null ? "" : dateFormater.format(library.getCreated());
+        library.getFiles().forEach(file -> {
+            if (file == null)
+                return;
+            log.debug("Processing file: " + file.getFileName());
+            final StringBuilder sb = new StringBuilder();
+            addHeader(sb, 0, file.getFileName() + " (" + file.getVersion() + ")", createdString);
+            process(sb, 0, file);
+            process(sb, 1, file.getVersionHistory());
+            processExitCodes(sb, 1, file.getExitCode());
+            processVariables(sb, 1, file.getVariable());
+            processMethods(sb, 1, file.getMethod());
+            writeFileData(file.getFileName().replaceFirst("[.][^.]+$", ".txt"), sb.toString().getBytes());
+        });
     }
 
     private void writeFileData(final String fileName, final byte[] content) {
