@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Date;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -18,7 +19,9 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.darkowl.bash_doc.builders.FileDataBuilder;
+import org.darkowl.bash_doc.enums.OutputType;
 import org.darkowl.bash_doc.model.Library;
+import org.darkowl.bash_doc.output.OutputManager;
 import org.darkowl.bash_doc.output.text.BashDocTextOutput;
 
 @Mojo(name = "document", defaultPhase = LifecyclePhase.PACKAGE)
@@ -32,6 +35,15 @@ public class BashDocPlugin extends AbstractMojo {
     private String outputDirectoryStr;
     @Parameter(defaultValue = "true", property = "outputRawXml", required = true)
     private boolean outputRawXml;
+
+    public void setOutputRawXml(boolean outputRawXml) {
+        this.outputRawXml = outputRawXml;
+    }
+
+    public void setOutputText(boolean outputText) {
+        this.outputText = outputText;
+    }
+
     @Parameter(defaultValue = "true", property = "outputText", required = true)
     private boolean outputText;
 
@@ -73,30 +85,14 @@ public class BashDocPlugin extends AbstractMojo {
             throw new MojoExecutionException(
                     "Failed to read source files from [" + srcDirectory.toAbsolutePath() + "].", e);
         }
-        if (outputRawXml)
-            outputRawXml(library);
+        OutputManager.init(Map.of(OutputType.RAW_XML, outputRawXml, OutputType.TEXT, outputText));
+        OutputManager.output(getLog(), outputDirectory, library);
         if (outputText)
             BashDocTextOutput.output(getLog(), outputDirectory, library);
     }
 
     public Library getLibrary() {
         return library;
-    }
-
-    private void outputRawXml(final Library rawXml) {
-        try {
-            final JAXBContext context = JAXBContext.newInstance(Library.class);
-            final Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            final Path rawXmlDir = outputDirectory.resolve("xml");
-            final Path rawXmlFile = rawXmlDir.resolve("RawXml.xml");
-            getLog().info("Writing Raw Xml to: " + rawXmlFile.toAbsolutePath());
-            Files.createDirectories(rawXmlDir);
-            marshaller.marshal(rawXml, Files.newOutputStream(rawXmlFile, StandardOpenOption.CREATE));
-        } catch (JAXBException | IOException e) {
-            getLog().error("Failed to output Raw Xml.", e);
-        }
-
     }
 
     public void processDirectory(final Path input) throws IOException {

@@ -15,6 +15,7 @@ import org.darkowl.bash_doc.model.MethodData;
 import org.darkowl.bash_doc.model.ParameterData;
 import org.darkowl.bash_doc.model.VariableData;
 import org.darkowl.bash_doc.model.VersionHistoryData;
+import org.darkowl.bash_doc.output.OutputFormatter;
 
 public class BashDocTextOutput {
     private static final ComponentCommentDataSort COMPONENT_COMMENT_DATA_SORTER = new ComponentCommentDataSort();
