@@ -220,8 +220,8 @@ public class BashDocTextOutput {
         });
     }
 
-    private void process(final StringBuilder output, final int index, final MethodData data) {
-        if (data == null)
+    private static void process(final StringBuilder output, final int index, final MethodData data) {
+        if (data == null || data.getName() == null || data.getName().isBlank())
             return;
         addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
         process(output, index, (CommonCommentData) data);
@@ -231,7 +231,7 @@ public class BashDocTextOutput {
         processExamples(output, index + 1, data.getExample());
     }
 
-    private void process(final StringBuilder output, final int index, final VariableData data) {
+    static void process(final StringBuilder output, final int index, final VariableData data) {
         if (data == null)
             return;
         addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
@@ -239,19 +239,22 @@ public class BashDocTextOutput {
         output.append(createPropertyOutput(index, "Default Value", data.getDefault()));
     }
 
-    private void processExamples(final StringBuilder output, final int index, final List<String> examples) {
+    static void processExamples(final StringBuilder output, final int index, final List<String> examples) {
         if (examples == null || examples.isEmpty())
             return;
-        addHeader(output, index, "Examples", null);
-        examples.forEach(example -> {
+        boolean firstRun = true;
+        for (String example : examples) {
             if (example == null || example.isBlank())
-                return;
+                continue;
+            if (firstRun) {
+                addHeader(output, index, "Examples", null);
+                firstRun = false;
+            }
             outputLine(output, index, " ", example);
-        });
-
+        }
     }
 
-    private void processExitCodes(final StringBuilder sb, final int index, final List<ExitCodeData> exitCodes) {
+    private static void processExitCodes(final StringBuilder sb, final int index, final List<ExitCodeData> exitCodes) {
         if (exitCodes == null || exitCodes.isEmpty())
             return;
         addHeader(sb, index, "Exit Codes", null);
@@ -260,7 +263,7 @@ public class BashDocTextOutput {
         });
     }
 
-    private void processMethods(final StringBuilder sb, final int index, final List<MethodData> methods) {
+    static void processMethods(final StringBuilder sb, final int index, final List<MethodData> methods) {
         if (methods == null || methods.isEmpty())
             return;
         addHeader(sb, index, "Methods", null);
@@ -270,7 +273,9 @@ public class BashDocTextOutput {
         });
     }
 
-    private void processParameters(final StringBuilder output, final int index, final List<ParameterData> parameters) {
+    private static void processParameters(final StringBuilder output,
+            final int index,
+            final List<ParameterData> parameters) {
         if (parameters == null || parameters.isEmpty())
             return;
         addHeader(output, index, "Parameters", null);
@@ -279,21 +284,27 @@ public class BashDocTextOutput {
         });
     }
 
-    private void processReturn(final StringBuilder sb, final int indent, final String description) {
+    private static void processReturn(final StringBuilder sb, final int indent, final String description) {
         if (description == null || description.isEmpty())
             return;
         addHeader(sb, indent, "Return", null);
         outputLine(sb, indent, description);
     }
 
-    private void processVariables(final StringBuilder sb, final int index, final List<VariableData> variables) {
+    static void processVariables(final StringBuilder sb, final int index, final List<VariableData> variables) {
         if (variables == null || variables.isEmpty())
             return;
-        addHeader(sb, index, "Variables", null);
+        boolean firstRun = true;
         Collections.sort(variables, COMPONENT_COMMENT_DATA_SORTER);
-        variables.forEach(var -> {
+        for (final VariableData var : variables) {
+            if (var == null || var.getName() == null || var.getName().isBlank())
+                continue;
+            if (firstRun) {
+                addHeader(sb, index, "Variables", null);
+                firstRun = false;
+            }
             process(sb, index + 1, var);
-        });
+        }
     }
 
     private void writeFileData(final String fileName, final byte[] content) {
