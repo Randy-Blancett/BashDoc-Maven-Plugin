@@ -24,7 +24,7 @@ import org.darkowl.bash_doc.model.VariableType;
 import org.darkowl.bash_doc.model.VersionHistoryData;
 import org.junit.jupiter.api.Test;
 
-class BashDocTextOutputTest {
+class BashDocTextOutputTest extends BashDocTextOutput {
 
     @Test
     void test() throws IOException {
@@ -205,11 +205,13 @@ class BashDocTextOutputTest {
         output.process(new SystemStreamLog(), outputDirectory, lib);
     }
 
+    BashDocTextOutput obj = new BashDocTextOutput();
+
     @Test
     void testProcess_VariableData_Special() {
         final StringBuilder sb = new StringBuilder();
         final VariableData data = null;
-        BashDocTextOutput.process(sb, 0, data);
+        obj.process(sb, 0, data);
         assertEquals("", sb.toString());
     }
 
@@ -218,35 +220,35 @@ class BashDocTextOutputTest {
         for (int i = 0; i < 6; i++) {
             StringBuilder sb = new StringBuilder();
             List<VersionHistoryData> data = null;
-            BashDocTextOutput.process(sb, i, data);
+            obj.process(sb, i, data);
             assertEquals("", sb.toString());
 
             data = new ArrayList<>();
 
-            BashDocTextOutput.process(sb, i, data);
+            obj.process(sb, i, data);
             assertEquals("", sb.toString());
 
             data.add(null);
-            BashDocTextOutput.process(sb, i, data);
+            obj.process(sb, i, data);
             assertEquals("", sb.toString());
 
             final VersionHistoryData item = new VersionHistoryData();
             data.add(item);
-            BashDocTextOutput.process(sb, i, data);
+            obj.process(sb, i, data);
             assertEquals("", sb.toString());
 
             item.setVersion(" ");
-            BashDocTextOutput.process(sb, i, data);
+            obj.process(sb, i, data);
             assertEquals("", sb.toString());
 
             item.setVersion("1.0.0");
-            BashDocTextOutput.process(sb, i, data);
+            obj.process(sb, i, data);
             testPerLine(sb.toString().replace("*", ""), "", "Version History", "", "", "", "1.0.0", "");
 
             sb = new StringBuilder();
             item.setAuthor("Author1");
             item.setAuthorEmail("Author1@email.com");
-            BashDocTextOutput.process(sb, i, data);
+            obj.process(sb, i, data);
             testPerLine(
                     sb.toString().replace("*", ""),
                     "",
@@ -261,7 +263,7 @@ class BashDocTextOutputTest {
 
             sb = new StringBuilder();
             item.setComment("Some Comment\n Some Other Comment");
-            BashDocTextOutput.process(sb, i, data);
+            obj.process(sb, i, data);
             testPerLine(
                     sb.toString().replace("*", ""),
                     "",
@@ -278,7 +280,7 @@ class BashDocTextOutputTest {
 
             sb = new StringBuilder();
             item.setRelease("Jan 2021");
-            BashDocTextOutput.process(sb, 0, data);
+            obj.process(sb, 0, data);
             testPerLine(
                     sb.toString().replace("*", ""),
                     "",
@@ -301,23 +303,23 @@ class BashDocTextOutputTest {
         for (int i = 0; i < 6; i++) {
             final StringBuilder sb = new StringBuilder();
             List<String> data = null;
-            BashDocTextOutput.processExamples(sb, i, data);
+            obj.processExamples(sb, i, data);
             assertEquals("", sb.toString());
 
             data = new ArrayList<>();
-            BashDocTextOutput.processExamples(sb, i, data);
+            obj.processExamples(sb, i, data);
             assertEquals("", sb.toString());
 
             data.add(null);
-            BashDocTextOutput.processExamples(sb, i, data);
+            obj.processExamples(sb, i, data);
             assertEquals("", sb.toString());
 
             data.add(" ");
-            BashDocTextOutput.processExamples(sb, i, data);
+            obj.processExamples(sb, i, data);
             assertEquals("", sb.toString());
 
             data.add("Some Example");
-            BashDocTextOutput.processExamples(sb, i, data);
+            obj.processExamples(sb, i, data);
             testPerLine(sb.toString().replace("*", "").trim(), "Examples", "", "Some Example");
         }
     }
@@ -327,34 +329,34 @@ class BashDocTextOutputTest {
         for (int i = 0; i < 6; i++) {
             StringBuilder sb = new StringBuilder();
             List<MethodData> data = null;
-            BashDocTextOutput.processMethods(sb, i, data);
+            obj.processMethods(sb, i, data);
             assertEquals("", sb.toString());
 
             data = new ArrayList<>();
 
-            BashDocTextOutput.processMethods(sb, i, data);
+            obj.processMethods(sb, i, data);
             assertEquals("", sb.toString());
 
             data.add(null);
-            BashDocTextOutput.processMethods(sb, i, data);
+            obj.processMethods(sb, i, data);
             testPerLine(sb.toString().replace("*", "").trim(), "Methods");
 
             sb = new StringBuilder();
             final MethodData item = new MethodData();
             data.add(item);
-            BashDocTextOutput.processMethods(sb, i, data);
+            obj.processMethods(sb, i, data);
             testPerLine(sb.toString().replace("*", "").trim(), "Methods");
 
             sb = new StringBuilder();
             item.setName(" ");
-            BashDocTextOutput.processMethods(sb, i, data);
+            obj.processMethods(sb, i, data);
             testPerLine(sb.toString().replace("*", "").trim(), "Methods");
 
             sb = new StringBuilder();
             item.setName("Method 1");
             item.setAuthor("Author1");
             item.setAuthorEmail("Author1@email.com");
-            BashDocTextOutput.processMethods(sb, i, data);
+            obj.processMethods(sb, i, data);
             testPerLine(
                     sb.toString().replace("*", ""),
                     "",
@@ -370,7 +372,7 @@ class BashDocTextOutputTest {
             sb = new StringBuilder();
             item.setComment("Comment1\nComment2");
             item.setReturn("Return Some Value...");
-            BashDocTextOutput.processMethods(sb, i, data);
+            obj.processMethods(sb, i, data);
             testPerLine(
                     sb.toString().replace("*", ""),
                     "",
@@ -392,7 +394,7 @@ class BashDocTextOutputTest {
 
             sb = new StringBuilder();
             item.setScope(ScopeType.PUBLIC);
-            BashDocTextOutput.processMethods(sb, 0, data);
+            obj.processMethods(sb, 0, data);
             testPerLine(
                     sb.toString().replace("*", ""),
                     "",
@@ -420,28 +422,28 @@ class BashDocTextOutputTest {
         for (int i = 0; i < 6; i++) {
             StringBuilder sb = new StringBuilder();
             List<VariableData> data = null;
-            BashDocTextOutput.processVariables(sb, i, data);
+            obj.processVariables(sb, i, data);
             assertEquals("", sb.toString());
 
             data = new ArrayList<>();
-            BashDocTextOutput.processVariables(sb, i, data);
+            obj.processVariables(sb, i, data);
             assertEquals("", sb.toString());
 
             data.add(null);
-            BashDocTextOutput.processVariables(sb, i, data);
+            obj.processVariables(sb, i, data);
             assertEquals("", sb.toString());
 
             VariableData item = new VariableData();
             data.add(item);
-            BashDocTextOutput.processVariables(sb, i, data);
+            obj.processVariables(sb, i, data);
             assertEquals("", sb.toString());
 
             item.setName(" ");
-            BashDocTextOutput.processVariables(sb, i, data);
+            obj.processVariables(sb, i, data);
             assertEquals("", sb.toString());
 
             item.setName("Var1");
-            BashDocTextOutput.processVariables(sb, i, data);
+            obj.processVariables(sb, i, data);
             testPerLine(sb.toString().replace("*", "").trim(), "Variables", "", "", "", "Var1");
 
             sb = new StringBuilder();
@@ -453,7 +455,7 @@ class BashDocTextOutputTest {
             item.setComment("This is the Second Variable.");
             item.setDefault("Data");
             item.setType(VariableType.STRING);
-            BashDocTextOutput.processVariables(sb, i, data);
+            obj.processVariables(sb, i, data);
             testPerLine(
                     sb.toString().replace("*", "").trim(),
                     "Variables",
@@ -473,7 +475,7 @@ class BashDocTextOutputTest {
 
             sb = new StringBuilder();
             item.setScope(ScopeType.PROTECTED);
-            BashDocTextOutput.processVariables(sb, 0, data);
+            obj.processVariables(sb, 0, data);
             testPerLine(
                     sb.toString().replace("*", "").trim(),
                     "Variables",

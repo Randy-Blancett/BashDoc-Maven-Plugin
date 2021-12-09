@@ -17,13 +17,12 @@ import org.darkowl.bash_doc.model.VariableData;
 import org.darkowl.bash_doc.model.VersionHistoryData;
 import org.darkowl.bash_doc.output.OutputFormatter;
 
-public class BashDocTextOutput implements OutputFormatter {
+public class BashDocTextOutput extends OutputFormatter {
     private static final ComponentCommentDataSort COMPONENT_COMMENT_DATA_SORTER = new ComponentCommentDataSort();
-    private static final DateFormat dateFormater = DateFormat.getDateTimeInstance();
     public static final int INDENT_SIZE = 4;
     public static final int LINE_WIDTH = 80;
 
-    private static void addHeader(final StringBuilder sb, final int indent, final String text, final String tailText) {
+    protected void addHeader(final StringBuilder sb, final int indent, final String text, final String tailText) {
         if (sb.length() > 1)
             sb.append('\n');
         sb.append(createHeaderLine(indent)).append(createHeaderData(indent, text, tailText))
@@ -165,7 +164,7 @@ public class BashDocTextOutput implements OutputFormatter {
                 .append(createPropertyOutput(index, "Author Email", commentData.getAuthorEmail()));
     }
 
-    static void process(final StringBuilder output, final int index, final List<VersionHistoryData> versionHistory) {
+    protected void process(final StringBuilder output, final int index, final List<VersionHistoryData> versionHistory) {
         if (versionHistory == null)
             return;
         boolean isFirst = true;
@@ -181,7 +180,7 @@ public class BashDocTextOutput implements OutputFormatter {
         }
     }
 
-    private static void process(final StringBuilder output, final int index, final MethodData data) {
+    private void process(final StringBuilder output, final int index, final MethodData data) {
         if (data == null || data.getName() == null || data.getName().isBlank())
             return;
         addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
@@ -192,7 +191,7 @@ public class BashDocTextOutput implements OutputFormatter {
         processExamples(output, index + 1, data.getExample());
     }
 
-    static void process(final StringBuilder output, final int index, final VariableData data) {
+    void process(final StringBuilder output, final int index, final VariableData data) {
         if (data == null)
             return;
         addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
@@ -200,7 +199,7 @@ public class BashDocTextOutput implements OutputFormatter {
         output.append(createPropertyOutput(index, "Default Value", data.getDefault()));
     }
 
-    static void processExamples(final StringBuilder output, final int index, final List<String> examples) {
+    void processExamples(final StringBuilder output, final int index, final List<String> examples) {
         if (examples == null || examples.isEmpty())
             return;
         boolean firstRun = true;
@@ -215,7 +214,7 @@ public class BashDocTextOutput implements OutputFormatter {
         }
     }
 
-    private static void processExitCodes(final StringBuilder sb, final int index, final List<ExitCodeData> exitCodes) {
+    protected void processExitCodes(final StringBuilder sb, final int index, final List<ExitCodeData> exitCodes) {
         if (exitCodes == null || exitCodes.isEmpty())
             return;
         addHeader(sb, index, "Exit Codes", null);
@@ -224,7 +223,7 @@ public class BashDocTextOutput implements OutputFormatter {
         });
     }
 
-    static void processMethods(final StringBuilder sb, final int index, final List<MethodData> methods) {
+    protected void processMethods(final StringBuilder sb, final int index, final List<MethodData> methods) {
         if (methods == null || methods.isEmpty())
             return;
         addHeader(sb, index, "Methods", null);
@@ -234,9 +233,7 @@ public class BashDocTextOutput implements OutputFormatter {
         });
     }
 
-    private static void processParameters(final StringBuilder output,
-            final int index,
-            final List<ParameterData> parameters) {
+    private void processParameters(final StringBuilder output, final int index, final List<ParameterData> parameters) {
         if (parameters == null || parameters.isEmpty())
             return;
         addHeader(output, index, "Parameters", null);
@@ -245,14 +242,14 @@ public class BashDocTextOutput implements OutputFormatter {
         });
     }
 
-    private static void processReturn(final StringBuilder sb, final int indent, final String description) {
+    private void processReturn(final StringBuilder sb, final int indent, final String description) {
         if (description == null || description.isEmpty())
             return;
         addHeader(sb, indent, "Return", null);
         outputLine(sb, indent, description);
     }
 
-    static void processVariables(final StringBuilder sb, final int index, final List<VariableData> variables) {
+    protected void processVariables(final StringBuilder sb, final int index, final List<VariableData> variables) {
         if (variables == null || variables.isEmpty())
             return;
         boolean firstRun = true;
@@ -268,19 +265,17 @@ public class BashDocTextOutput implements OutputFormatter {
         }
     }
 
-    private Log log;
+    private static final DateFormat dateFormater = DateFormat.getDateTimeInstance();
 
-    private Path outputDir;
-
-    void process(final Library library) {
-        log.info("Processing Text Output...");
+    protected void process(final Library library) {
+        this.getLog().info("Processing Text Output...");
         if (library == null)
             return;
         final String createdString = library.getCreated() == null ? "" : dateFormater.format(library.getCreated());
         library.getFiles().forEach(file -> {
             if (file == null)
                 return;
-            log.debug("Processing file: " + file.getFileName());
+            this.getLog().debug("Processing file: " + file.getFileName());
             final StringBuilder sb = new StringBuilder();
             addHeader(sb, 0, file.getFileName() + " (" + file.getVersion() + ")", createdString);
             process(sb, 0, file);
@@ -294,19 +289,19 @@ public class BashDocTextOutput implements OutputFormatter {
 
     @Override
     public void process(final Log log, final Path outputDir, final Library library) throws IOException {
-        this.outputDir = outputDir.resolve("text");
-        this.log = log;
-        Files.createDirectories(this.outputDir);
+        super.process(log, outputDir, library);
+        Files.createDirectories(getOutputDir());
         process(library);
     }
 
-    private void writeFileData(final String fileName, final byte[] content) {
-        final Path filePath = outputDir.resolve(fileName);
-        log.debug("Saving data to: " + filePath.toAbsolutePath());
+    protected void writeFileData(final String fileName, final byte[] content) {
+        final String localFileName = fileName.replaceFirst("[.][^.]+$", ".txt");
+        final Path filePath = this.getOutputDir().resolve(localFileName);
+        this.getLog().debug("Saving data to: " + filePath.toAbsolutePath());
         try {
             Files.write(filePath, content);
         } catch (final IOException e) {
-            log.error("Failed to write text document", e);
+            getLog().error("Failed to write text document", e);
         }
 
     }

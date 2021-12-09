@@ -13,7 +13,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.darkowl.bash_doc.model.Library;
 import org.darkowl.bash_doc.output.OutputFormatter;
 
-public class OutputRawXml implements OutputFormatter {
+public class OutputRawXml extends OutputFormatter {
 
     @Override
     public void process(final Log log, final Path outputDir, final Library library) {
