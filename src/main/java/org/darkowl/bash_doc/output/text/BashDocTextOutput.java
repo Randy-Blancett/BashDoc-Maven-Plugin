@@ -3,36 +3,16 @@ package org.darkowl.bash_doc.output.text;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
 import org.darkowl.bash_doc.model.CommonCommentData;
 import org.darkowl.bash_doc.model.Library;
-import org.darkowl.bash_doc.model.MethodData;
-import org.darkowl.bash_doc.model.ParameterData;
 import org.darkowl.bash_doc.model.VariableData;
-import org.darkowl.bash_doc.output.ExitCodeDataProcessor;
 import org.darkowl.bash_doc.output.OutputFormatter;
 
 public class BashDocTextOutput extends OutputFormatter {
-    private static final ComponentCommentDataSort COMPONENT_COMMENT_DATA_SORTER = new ComponentCommentDataSort();
     public static final int INDENT_SIZE = 4;
-
     public static final int LINE_WIDTH = 80;
-
-    static String createCommentBlock(final int indent, final String comment) {
-        if (comment == null || comment.isBlank())
-            return "";
-        final String[] commentLines = comment.split("\n");
-        final StringBuilder output = new StringBuilder();
-        for (final String line : commentLines) {
-            if (line == null || line.isBlank())
-                continue;
-            outputLine(output, indent, line);
-        }
-
-        return output.toString();
-    }
 
     private static String createHeaderData(final int indent, final String text, final String tailText) {
         final StringBuilder output = new StringBuilder();
@@ -110,10 +90,6 @@ public class BashDocTextOutput extends OutputFormatter {
         output.append('\n');
     }
 
-    static void outputLine(final StringBuilder output, final int indent, final String... data) {
-        outputLine(output, indent, true, data);
-    }
-
     private static String padRight(final String text, final int totalLength) {
         final StringBuilder output = new StringBuilder(text == null ? "" : text);
         while (output.length() < totalLength)
@@ -127,6 +103,20 @@ public class BashDocTextOutput extends OutputFormatter {
             sb.append('\n');
         sb.append(createHeaderLine(indent)).append(createHeaderData(indent, text, tailText))
                 .append(createHeaderLine(indent));
+    }
+
+    String createCommentBlock(final int indent, final String comment) {
+        if (comment == null || comment.isBlank())
+            return "";
+        final String[] commentLines = comment.split("\n");
+        final StringBuilder output = new StringBuilder();
+        for (final String line : commentLines) {
+            if (line == null || line.isBlank())
+                continue;
+            outputLine(output, indent, line);
+        }
+
+        return output.toString();
     }
 
     @Override
@@ -158,6 +148,11 @@ public class BashDocTextOutput extends OutputFormatter {
     }
 
     @Override
+    protected void outputLine(final StringBuilder output, final int indent, final String... data) {
+        outputLine(output, indent, true, data);
+    }
+
+    @Override
     public void process(final Log log, final Path outputDir, final Library library) throws IOException {
         super.process(log, outputDir, library);
         Files.createDirectories(getOutputDir());
@@ -174,19 +169,6 @@ public class BashDocTextOutput extends OutputFormatter {
     }
 
     @Override
-    protected void process(final StringBuilder output, final int index, final MethodData data) {
-        if (data == null || data.getName() == null || data.getName().isBlank())
-            return;
-        addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
-        process(output, index, (CommonCommentData) data);
-        processParameters(output, index + 1, data.getParameter());
-        processReturn(output, index + 1, data.getReturn());
-//        processExitCodes(output, index + 1, data.getExitCode());
-        ExitCodeDataProcessor.process(this, output, index + 1, data.getExitCode());
-        processExamples(output, index + 1, data.getExample());
-    }
-
-    @Override
     protected void process(final StringBuilder output, final int index, final VariableData data) {
         if (data == null)
             return;
@@ -195,31 +177,8 @@ public class BashDocTextOutput extends OutputFormatter {
         output.append(createPropertyOutput(index, "Default Value", data.getDefault()));
     }
 
-    void processExamples(final StringBuilder output, final int index, final List<String> examples) {
-        if (examples == null || examples.isEmpty())
-            return;
-        boolean firstRun = true;
-        for (final String example : examples) {
-            if (example == null || example.isBlank())
-                continue;
-            if (firstRun) {
-                addHeader(output, index, "Examples", null);
-                firstRun = false;
-            }
-            outputLine(output, index, " ", example);
-        }
-    }
-
-    private void processParameters(final StringBuilder output, final int index, final List<ParameterData> parameters) {
-        if (parameters == null || parameters.isEmpty())
-            return;
-        addHeader(output, index, "Parameters", null);
-        parameters.forEach(param -> {
-            output.append(createParameterOutput(index, param.getPosition(), param.getName(), param.getDescrtiption()));
-        });
-    }
-
-    private void processReturn(final StringBuilder sb, final int indent, final String description) {
+    @Override
+    protected void processReturn(final StringBuilder sb, final int indent, final String description) {
         if (description == null || description.isEmpty())
             return;
         addHeader(sb, indent, "Return", null);

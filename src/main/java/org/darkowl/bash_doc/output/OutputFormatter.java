@@ -38,6 +38,9 @@ public abstract class OutputFormatter {
         return outputDir;
     }
 
+    protected void outputLine(final StringBuilder output, final int indent, final String... data) {
+    }
+
     protected void process(final Library library) {
         log.info("Processing Output...");
         if (library == null)
@@ -72,13 +75,15 @@ public abstract class OutputFormatter {
         addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
         process(output, index, (CommonCommentData) data);
         ParameterDataProcessor.process(this, output, index + 1, data.getParameter());
-//            processParameters(output, index + 1, data.getParameter());
-//            processReturn(output, index + 1, data.getReturn());
+        processReturn(output, index + 1, data.getReturn());
         ExitCodeDataProcessor.process(this, output, index + 1, data.getExitCode());
-//            processExamples(output, index + 1, data.getExample());
+        ExampleProcessor.process(this, output, index + 1, data.getExample());
     }
 
     protected void process(final StringBuilder output, final int index, final VariableData data) {
+    }
+
+    protected void processReturn(final StringBuilder sb, final int indent, final String description) {
     }
 
     protected void writeFileData(final String replaceFirst, final byte[] bytes) {

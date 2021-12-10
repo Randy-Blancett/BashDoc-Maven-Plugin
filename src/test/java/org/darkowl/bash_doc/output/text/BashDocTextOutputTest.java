@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.darkowl.bash_doc.TestUtils;
@@ -42,13 +40,13 @@ class BashDocTextOutputTest extends BashDocTextOutput {
     @Test
     void testCreateCommentBlock() {
         for (int i = 0; i < 6; i++) {
-            assertEquals("", BashDocTextOutput.createCommentBlock(i, null));
-            assertEquals("", BashDocTextOutput.createCommentBlock(i, ""));
-            final String data = BashDocTextOutput.createCommentBlock(i, "Hello World");
+            assertEquals("", obj.createCommentBlock(i, null));
+            assertEquals("", obj.createCommentBlock(i, ""));
+            final String data = obj.createCommentBlock(i, "Hello World");
             assertTrue(data.endsWith("Hello World\n"));
             assertEquals(i * 4 + 12, data.length());
         }
-        assertEquals("Hi\nall\n", BashDocTextOutput.createCommentBlock(0, "Hi\nall\n "));
+        assertEquals("Hi\nall\n", obj.createCommentBlock(0, "Hi\nall\n "));
     }
 
     @Test
@@ -113,7 +111,7 @@ class BashDocTextOutputTest extends BashDocTextOutput {
     @Test
     void testOutputLine() {
         final StringBuilder sb = new StringBuilder();
-        BashDocTextOutput.outputLine(
+        obj.outputLine(
                 sb,
                 0,
                 "The ",
@@ -135,7 +133,7 @@ class BashDocTextOutputTest extends BashDocTextOutput {
     @Test
     void testOutputLine_bug1() {
         final StringBuilder sb = new StringBuilder();
-        BashDocTextOutput.outputLine(
+        obj.outputLine(
                 sb,
                 0,
                 null,
@@ -207,32 +205,6 @@ class BashDocTextOutputTest extends BashDocTextOutput {
         final VariableData data = null;
         obj.process(sb, 0, data);
         assertEquals("", sb.toString());
-    }
-
-    @Test
-    void testProcessExamples() {
-        for (int i = 0; i < 6; i++) {
-            final StringBuilder sb = new StringBuilder();
-            List<String> data = null;
-            obj.processExamples(sb, i, data);
-            assertEquals("", sb.toString());
-
-            data = new ArrayList<>();
-            obj.processExamples(sb, i, data);
-            assertEquals("", sb.toString());
-
-            data.add(null);
-            obj.processExamples(sb, i, data);
-            assertEquals("", sb.toString());
-
-            data.add(" ");
-            obj.processExamples(sb, i, data);
-            assertEquals("", sb.toString());
-
-            data.add("Some Example");
-            obj.processExamples(sb, i, data);
-            TestUtils.testPerLine(sb.toString().replace("*", "").trim(), "Examples", "", "Some Example");
-        }
     }
 
 }
