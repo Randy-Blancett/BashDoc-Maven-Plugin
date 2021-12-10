@@ -13,18 +13,17 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.SystemStreamLog;
+import org.darkowl.bash_doc.TestUtils;
 import org.darkowl.bash_doc.builders.FileDataBuilder;
 import org.darkowl.bash_doc.model.CommonCommentData;
 import org.darkowl.bash_doc.model.FileData;
 import org.darkowl.bash_doc.model.Library;
-import org.darkowl.bash_doc.model.MethodData;
-import org.darkowl.bash_doc.model.ScopeType;
 import org.darkowl.bash_doc.model.VariableData;
-import org.darkowl.bash_doc.model.VariableType;
-import org.darkowl.bash_doc.model.VersionHistoryData;
 import org.junit.jupiter.api.Test;
 
 class BashDocTextOutputTest extends BashDocTextOutput {
+
+    BashDocTextOutput obj = new BashDocTextOutput();
 
     @Test
     void test() throws IOException {
@@ -33,7 +32,7 @@ class BashDocTextOutputTest extends BashDocTextOutput {
         lib.getFiles().add(data);
         final Path outputDirectory = Paths.get("target/testOutput/doc");
         Files.createDirectories(outputDirectory);
-        BashDocTextOutput output = new BashDocTextOutput();
+        final BashDocTextOutput output = new BashDocTextOutput();
         output.process(new SystemStreamLog(), outputDirectory, lib);
         assertTrue(
                 Files.exists(outputDirectory.resolve("text").resolve("Test1.txt")),
@@ -55,17 +54,17 @@ class BashDocTextOutputTest extends BashDocTextOutput {
     @Test
     void testCreateExitCodeOutput() {
         for (int i = 0; i < 6; i++) {
-            assertNull(BashDocTextOutput.createExitCodeOutput(i, null, null));
+            assertNull(obj.createExitCodeOutput(i, null, null));
 
-            String data = BashDocTextOutput.createExitCodeOutput(i, 1, null);
+            String data = obj.createExitCodeOutput(i, 1, null);
             assertEquals("1-", data.trim());
             assertEquals(i * 4 + 3, data.length());
 
-            data = BashDocTextOutput.createExitCodeOutput(i, null, "Value");
+            data = obj.createExitCodeOutput(i, null, "Value");
             assertEquals("Value", data.trim());
             assertEquals(i * 4 + 6, data.length());
 
-            data = BashDocTextOutput.createExitCodeOutput(i, 1, "Value");
+            data = obj.createExitCodeOutput(i, 1, "Value");
             assertEquals("1- Value", data.trim());
             assertEquals(i * 4 + 9, data.length());
 
@@ -75,24 +74,24 @@ class BashDocTextOutputTest extends BashDocTextOutput {
     @Test
     void testCreateParameterOutput() {
         for (int i = 0; i < 6; i++) {
-            assertNull(BashDocTextOutput.createParameterOutput(i, null, null, null));
-            String data = BashDocTextOutput.createParameterOutput(i, 1, null, null);
+            assertNull(obj.createParameterOutput(i, null, null, null));
+            String data = obj.createParameterOutput(i, 1, null, null);
             assertEquals("01 -", data.trim());
             assertEquals(i * 4 + 5, data.length());
 
-            data = BashDocTextOutput.createParameterOutput(i, null, "Test", null);
+            data = obj.createParameterOutput(i, null, "Test", null);
             assertEquals("Test", data.trim());
             assertEquals(i * 4 + 16, data.length());
 
-            data = BashDocTextOutput.createParameterOutput(i, null, null, "Some Test Data");
+            data = obj.createParameterOutput(i, null, null, "Some Test Data");
             assertEquals("Some Test Data", data.trim());
             assertEquals(i * 4 + 15, data.length());
 
-            data = BashDocTextOutput.createParameterOutput(i, 1, "Test", null);
+            data = obj.createParameterOutput(i, 1, "Test", null);
             assertEquals("01 - Test", data.trim());
             assertEquals(i * 4 + 21, data.length());
 
-            data = BashDocTextOutput.createParameterOutput(i, 1, "Test", "Some Test Data.");
+            data = obj.createParameterOutput(i, 1, "Test", "Some Test Data.");
             assertEquals("01 - Test            Some Test Data.", data.trim());
             assertEquals(i * 4 + 37, data.length());
         }
@@ -153,38 +152,35 @@ class BashDocTextOutputTest extends BashDocTextOutput {
         assertEquals("fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. the", testArray[0]);
     }
 
-    void testPerLine(final String raw, final String... expected) {
-        final String[] data = raw.split("\n");
-        assertEquals(expected.length, data.length, "Full Data: " + raw);
-        for (int i = 0; i < data.length; i++)
-            assertEquals(expected[i], data[i].trim(), "Full Data: " + raw);
-    }
-
     @Test
     void testProcess_CommentData() {
         for (int i = 0; i < 6; i++) {
             StringBuilder sb = new StringBuilder();
-            BashDocTextOutput.process(sb, i, (CommonCommentData) null);
+            obj.process(sb, i, (CommonCommentData) null);
             assertEquals("", sb.toString());
 
             final CommonCommentData data = new CommonCommentData();
 
-            BashDocTextOutput.process(sb, i, data);
+            obj.process(sb, i, data);
             assertEquals("", sb.toString());
 
             data.setComment("Test Comment");
-            BashDocTextOutput.process(sb, i, data);
+            obj.process(sb, i, data);
             assertEquals("Test Comment", sb.toString().trim());
 
             sb = new StringBuilder();
             data.setAuthor("Author1");
-            BashDocTextOutput.process(sb, i, data);
-            testPerLine(sb.toString(), "Test Comment", "- Author: Author1");
+            obj.process(sb, i, data);
+            TestUtils.testPerLine(sb.toString(), "Test Comment", "- Author: Author1");
 
             sb = new StringBuilder();
             data.setAuthorEmail("Author@email.com");
-            BashDocTextOutput.process(sb, i, data);
-            testPerLine(sb.toString(), "Test Comment", "- Author: Author1", "- Author Email: Author@email.com");
+            obj.process(sb, i, data);
+            TestUtils.testPerLine(
+                    sb.toString(),
+                    "Test Comment",
+                    "- Author: Author1",
+                    "- Author Email: Author@email.com");
         }
     }
 
@@ -205,97 +201,12 @@ class BashDocTextOutputTest extends BashDocTextOutput {
         output.process(new SystemStreamLog(), outputDirectory, lib);
     }
 
-    BashDocTextOutput obj = new BashDocTextOutput();
-
     @Test
     void testProcess_VariableData_Special() {
         final StringBuilder sb = new StringBuilder();
         final VariableData data = null;
         obj.process(sb, 0, data);
         assertEquals("", sb.toString());
-    }
-
-    @Test
-    void testProcess_VersionHistory() {
-        for (int i = 0; i < 6; i++) {
-            StringBuilder sb = new StringBuilder();
-            List<VersionHistoryData> data = null;
-            obj.process(sb, i, data);
-            assertEquals("", sb.toString());
-
-            data = new ArrayList<>();
-
-            obj.process(sb, i, data);
-            assertEquals("", sb.toString());
-
-            data.add(null);
-            obj.process(sb, i, data);
-            assertEquals("", sb.toString());
-
-            final VersionHistoryData item = new VersionHistoryData();
-            data.add(item);
-            obj.process(sb, i, data);
-            assertEquals("", sb.toString());
-
-            item.setVersion(" ");
-            obj.process(sb, i, data);
-            assertEquals("", sb.toString());
-
-            item.setVersion("1.0.0");
-            obj.process(sb, i, data);
-            testPerLine(sb.toString().replace("*", ""), "", "Version History", "", "", "", "1.0.0", "");
-
-            sb = new StringBuilder();
-            item.setAuthor("Author1");
-            item.setAuthorEmail("Author1@email.com");
-            obj.process(sb, i, data);
-            testPerLine(
-                    sb.toString().replace("*", ""),
-                    "",
-                    "Version History",
-                    "",
-                    "",
-                    "",
-                    "1.0.0",
-                    "",
-                    "- Author: Author1",
-                    "- Author Email: Author1@email.com");
-
-            sb = new StringBuilder();
-            item.setComment("Some Comment\n Some Other Comment");
-            obj.process(sb, i, data);
-            testPerLine(
-                    sb.toString().replace("*", ""),
-                    "",
-                    "Version History",
-                    "",
-                    "",
-                    "",
-                    "1.0.0",
-                    "",
-                    "Some Comment",
-                    "Some Other Comment",
-                    "- Author: Author1",
-                    "- Author Email: Author1@email.com");
-
-            sb = new StringBuilder();
-            item.setRelease("Jan 2021");
-            obj.process(sb, 0, data);
-            testPerLine(
-                    sb.toString().replace("*", ""),
-                    "",
-                    "Version History",
-                    "",
-                    "",
-                    "",
-                    "1.0.0                                                           Jan 2021",
-                    "",
-                    "Some Comment",
-                    "Some Other Comment",
-                    "- Author: Author1",
-                    "- Author Email: Author1@email.com");
-
-        }
     }
 
     @Test
@@ -320,177 +231,8 @@ class BashDocTextOutputTest extends BashDocTextOutput {
 
             data.add("Some Example");
             obj.processExamples(sb, i, data);
-            testPerLine(sb.toString().replace("*", "").trim(), "Examples", "", "Some Example");
+            TestUtils.testPerLine(sb.toString().replace("*", "").trim(), "Examples", "", "Some Example");
         }
     }
 
-    @Test
-    void testProcessMethods() {
-        for (int i = 0; i < 6; i++) {
-            StringBuilder sb = new StringBuilder();
-            List<MethodData> data = null;
-            obj.processMethods(sb, i, data);
-            assertEquals("", sb.toString());
-
-            data = new ArrayList<>();
-
-            obj.processMethods(sb, i, data);
-            assertEquals("", sb.toString());
-
-            data.add(null);
-            obj.processMethods(sb, i, data);
-            testPerLine(sb.toString().replace("*", "").trim(), "Methods");
-
-            sb = new StringBuilder();
-            final MethodData item = new MethodData();
-            data.add(item);
-            obj.processMethods(sb, i, data);
-            testPerLine(sb.toString().replace("*", "").trim(), "Methods");
-
-            sb = new StringBuilder();
-            item.setName(" ");
-            obj.processMethods(sb, i, data);
-            testPerLine(sb.toString().replace("*", "").trim(), "Methods");
-
-            sb = new StringBuilder();
-            item.setName("Method 1");
-            item.setAuthor("Author1");
-            item.setAuthorEmail("Author1@email.com");
-            obj.processMethods(sb, i, data);
-            testPerLine(
-                    sb.toString().replace("*", ""),
-                    "",
-                    "Methods",
-                    "",
-                    "",
-                    "",
-                    "Method 1",
-                    "",
-                    "- Author: Author1",
-                    "- Author Email: Author1@email.com");
-
-            sb = new StringBuilder();
-            item.setComment("Comment1\nComment2");
-            item.setReturn("Return Some Value...");
-            obj.processMethods(sb, i, data);
-            testPerLine(
-                    sb.toString().replace("*", ""),
-                    "",
-                    "Methods",
-                    "",
-                    "",
-                    "",
-                    "Method 1",
-                    "",
-                    "Comment1",
-                    "Comment2",
-                    "- Author: Author1",
-                    "- Author Email: Author1@email.com",
-                    "",
-                    "",
-                    "Return",
-                    "",
-                    "Return Some Value...");
-
-            sb = new StringBuilder();
-            item.setScope(ScopeType.PUBLIC);
-            obj.processMethods(sb, 0, data);
-            testPerLine(
-                    sb.toString().replace("*", ""),
-                    "",
-                    "Methods",
-                    "",
-                    "",
-                    "",
-                    "Method 1                                                          PUBLIC",
-                    "",
-                    "Comment1",
-                    "Comment2",
-                    "- Author: Author1",
-                    "- Author Email: Author1@email.com",
-                    "",
-                    "",
-                    "Return",
-                    "",
-                    "Return Some Value...");
-
-        }
-    }
-
-    @Test
-    void testProcessVariables() {
-        for (int i = 0; i < 6; i++) {
-            StringBuilder sb = new StringBuilder();
-            List<VariableData> data = null;
-            obj.processVariables(sb, i, data);
-            assertEquals("", sb.toString());
-
-            data = new ArrayList<>();
-            obj.processVariables(sb, i, data);
-            assertEquals("", sb.toString());
-
-            data.add(null);
-            obj.processVariables(sb, i, data);
-            assertEquals("", sb.toString());
-
-            VariableData item = new VariableData();
-            data.add(item);
-            obj.processVariables(sb, i, data);
-            assertEquals("", sb.toString());
-
-            item.setName(" ");
-            obj.processVariables(sb, i, data);
-            assertEquals("", sb.toString());
-
-            item.setName("Var1");
-            obj.processVariables(sb, i, data);
-            testPerLine(sb.toString().replace("*", "").trim(), "Variables", "", "", "", "Var1");
-
-            sb = new StringBuilder();
-            item = new VariableData();
-            data.add(item);
-            item.setName("Var2");
-            item.setAuthor("Author 1");
-            item.setAuthorEmail("Author1@email.com");
-            item.setComment("This is the Second Variable.");
-            item.setDefault("Data");
-            item.setType(VariableType.STRING);
-            obj.processVariables(sb, i, data);
-            testPerLine(
-                    sb.toString().replace("*", "").trim(),
-                    "Variables",
-                    "",
-                    "",
-                    "",
-                    "Var1",
-                    "",
-                    "",
-                    "",
-                    "Var2",
-                    "",
-                    "This is the Second Variable.",
-                    "- Author: Author 1",
-                    "- Author Email: Author1@email.com",
-                    "- Default Value: Data");
-
-            sb = new StringBuilder();
-            item.setScope(ScopeType.PROTECTED);
-            obj.processVariables(sb, 0, data);
-            testPerLine(
-                    sb.toString().replace("*", "").trim(),
-                    "Variables",
-                    "",
-                    "",
-                    "",
-                    "Var2                                                           PROTECTED",
-                    "",
-                    "This is the Second Variable.",
-                    "- Author: Author 1",
-                    "- Author Email: Author1@email.com",
-                    "- Default Value: Data",
-                    "",
-                    "",
-                    "Var1");
-        }
-    }
 }
