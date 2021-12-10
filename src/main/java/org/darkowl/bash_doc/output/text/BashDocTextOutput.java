@@ -3,8 +3,6 @@ package org.darkowl.bash_doc.output.text;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.DateFormat;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
@@ -57,24 +55,6 @@ public class BashDocTextOutput extends OutputFormatter {
         while (output.length() < LINE_WIDTH)
             output.append('*');
         output.append('\n');
-        return output.toString();
-    }
-
-    protected String createParameterOutput(final int indent,
-            final Integer position,
-            final String name,
-            final String description) {
-        if (position == null && name == null && description == null)
-            return null;
-        final StringBuilder output = new StringBuilder();
-        outputLine(
-                output,
-                indent,
-                false,
-                " ",
-                position == null ? "" : String.format("%02d -", position),
-                padRight(name, 15),
-                description);
         return output.toString();
     }
 
@@ -159,6 +139,25 @@ public class BashDocTextOutput extends OutputFormatter {
     }
 
     @Override
+    protected String createParameterOutput(final int indent,
+            final Integer position,
+            final String name,
+            final String description) {
+        if (position == null && name == null && description == null)
+            return null;
+        final StringBuilder output = new StringBuilder();
+        outputLine(
+                output,
+                indent,
+                false,
+                " ",
+                position == null ? "" : String.format("%02d -", position),
+                padRight(name, 15),
+                description);
+        return output.toString();
+    }
+
+    @Override
     public void process(final Log log, final Path outputDir, final Library library) throws IOException {
         super.process(log, outputDir, library);
         Files.createDirectories(getOutputDir());
@@ -174,6 +173,7 @@ public class BashDocTextOutput extends OutputFormatter {
                 .append(createPropertyOutput(index, "Author Email", commentData.getAuthorEmail()));
     }
 
+    @Override
     protected void process(final StringBuilder output, final int index, final MethodData data) {
         if (data == null || data.getName() == null || data.getName().isBlank())
             return;

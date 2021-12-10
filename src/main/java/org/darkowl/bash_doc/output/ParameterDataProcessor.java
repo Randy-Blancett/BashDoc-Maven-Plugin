@@ -2,7 +2,6 @@ package org.darkowl.bash_doc.output;
 
 import java.util.List;
 
-import org.darkowl.bash_doc.model.MethodData;
 import org.darkowl.bash_doc.model.ParameterData;
 
 public class ParameterDataProcessor extends BaseDataProcessor<ParameterData> {
@@ -18,12 +17,10 @@ public class ParameterDataProcessor extends BaseDataProcessor<ParameterData> {
     }
 
     @Override
-    protected boolean isValid(ParameterData data) {
-        return data.getPosition() != null || data.getName() != null || data.getDescrtiption() != null;
-    }
-
-    @Override
-    protected void formatData(OutputFormatter outputFormatter, StringBuilder output, int index, ParameterData param) {
+    protected void formatData(final OutputFormatter outputFormatter,
+            final StringBuilder output,
+            final int index,
+            final ParameterData param) {
         output.append(
                 outputFormatter
                         .createParameterOutput(index, param.getPosition(), param.getName(), param.getDescrtiption()));
@@ -32,6 +29,11 @@ public class ParameterDataProcessor extends BaseDataProcessor<ParameterData> {
     @Override
     protected String getHeaderString() {
         return "Parameters";
+    }
+
+    @Override
+    protected boolean isValid(final ParameterData data) {
+        return data.getPosition() != null || data.getName() != null || data.getDescrtiption() != null;
     }
 
 }
