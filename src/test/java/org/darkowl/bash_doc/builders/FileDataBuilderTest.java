@@ -20,8 +20,20 @@ import org.darkowl.bash_doc.model.ScopeType;
 import org.darkowl.bash_doc.model.VariableData;
 import org.darkowl.bash_doc.model.VersionHistoryData;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class FileDataBuilderTest {
+
+    @ParameterizedTest
+    @CsvSource({
+            "   ,       , ''", "' ',       , ''", "   ,' '    , ''", "Old,       , Old", "   ,New    , New",
+            "Old,New    , 'Old\nNew'"
+    })
+    void testBuildComment(final String oldData, final String newData, final String expected) {
+        assertEquals(expected, FileDataBuilder.buildComment(oldData, newData));
+
+    }
 
     @Test
     void testCreate() throws IOException {
@@ -107,6 +119,38 @@ class FileDataBuilderTest {
         assertEquals("Something went very wrong...", exitCode.getDescription());
     }
 
+    @ParameterizedTest
+    @CsvSource({
+            ",false", "' ',false", "(),false", "Something,true"
+    })
+    void testOutputDefaultValue(final String value, final Boolean expected) {
+        assertEquals(expected, FileDataBuilder.outputDefaultValue(value));
+    }
+
+    @Test
+    void testPopStack() {
+        Stack<StackObj<?>> stack = null;
+        FileDataBuilder.popStack(stack, null);
+        assertNull(stack);
+
+        stack = new Stack<>();
+        FileDataBuilder.popStack(stack, null);
+        assertEquals(0, stack.size());
+
+        stack.add(new StackObj<String>(LineTags.CODE, null));
+        stack.add(new StackObj<String>(LineTags.CODE, null));
+        stack.add(new StackObj<String>(LineTags.CODE, null));
+        stack.add(new StackObj<String>(LineTags.CODE, null));
+        stack.add(new StackObj<String>(LineTags.CODE, null));
+
+        assertEquals(5, stack.size());
+
+        FileDataBuilder.popStack(stack, LineTags.AUTHOR);
+
+        assertEquals(LineTags.AUTHOR.getLevel() - 1, stack.size());
+
+    }
+
     @Test
     void testProcessExamples() {
         final CommentStack stack = new CommentStack();
@@ -122,8 +166,6 @@ class FileDataBuilderTest {
         assertEquals(1, stack.size());
         FileDataBuilder.setStack(stack, new StackObj<List<VersionHistoryData>>(LineTags.VERSIONS, new ArrayList<>()));
         assertEquals(2, stack.size());
-        // FileDataBuilder.setStack(stack, LineTags.HISTORIC_VERSION, new FileData());
-        // assertEquals(3, stack.size());
         FileDataBuilder.setStack(stack, new StackObj<>(LineTags.FILE, new FileData()));
         assertEquals(1, stack.size());
     }

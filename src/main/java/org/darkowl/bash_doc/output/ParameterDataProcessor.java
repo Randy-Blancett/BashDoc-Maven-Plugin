@@ -33,7 +33,10 @@ public class ParameterDataProcessor extends BaseDataProcessor<ParameterData> {
 
     @Override
     protected boolean isValid(final ParameterData data) {
-        return data.getPosition() != null || data.getName() != null || data.getDescrtiption() != null;
+        if (data == null)
+            return false;
+        return data.getPosition() != null || data.getName() != null && !data.getName().isBlank()
+                || data.getDescrtiption() != null && !data.getDescrtiption().isBlank();
     }
 
 }

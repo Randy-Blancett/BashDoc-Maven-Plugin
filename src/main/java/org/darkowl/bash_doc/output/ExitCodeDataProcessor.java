@@ -31,7 +31,9 @@ public class ExitCodeDataProcessor extends BaseDataProcessor<ExitCodeData> {
 
     @Override
     protected boolean isValid(final ExitCodeData code) {
-        return code.getCode() != null || code.getDescription() != null && code.getDescription().isBlank();
+        if (code == null)
+            return false;
+        return code.getCode() != null || code.getDescription() != null && !code.getDescription().isBlank();
     }
 
 }

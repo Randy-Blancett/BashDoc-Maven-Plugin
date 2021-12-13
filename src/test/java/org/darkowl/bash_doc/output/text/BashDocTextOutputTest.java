@@ -16,6 +16,8 @@ import org.darkowl.bash_doc.builders.FileDataBuilder;
 import org.darkowl.bash_doc.model.CommonCommentData;
 import org.darkowl.bash_doc.model.FileData;
 import org.darkowl.bash_doc.model.Library;
+import org.darkowl.bash_doc.model.MethodData;
+import org.darkowl.bash_doc.model.ScopeType;
 import org.darkowl.bash_doc.model.VariableData;
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +44,7 @@ class BashDocTextOutputTest extends BashDocTextOutput {
         for (int i = 0; i < 6; i++) {
             assertEquals("", obj.createCommentBlock(i, null));
             assertEquals("", obj.createCommentBlock(i, ""));
+            assertEquals("", obj.createCommentBlock(i, " \n \n\n"));
             final String data = obj.createCommentBlock(i, "Hello World");
             assertTrue(data.endsWith("Hello World\n"));
             assertEquals(i * 4 + 12, data.length());
@@ -183,6 +186,64 @@ class BashDocTextOutputTest extends BashDocTextOutput {
     }
 
     @Test
+    void testProcess_Method() {
+        for (int i = 0; i < 6; i++) {
+            StringBuilder sb = new StringBuilder();
+            MethodData data = null;
+            process(sb, i, data);
+            assertEquals("", sb.toString());
+
+            data = new MethodData();
+            process(sb, i, data);
+            assertEquals("", sb.toString());
+
+            data.setName(" ");
+            process(sb, i, data);
+            assertEquals("", sb.toString());
+
+            data.setName("Method 1");
+            process(sb, i, data);
+            TestUtils.testPerLine(sb.toString().replace("*", "").trim(), "Method 1");
+
+            sb = new StringBuilder();
+            data.setAuthorEmail("Author1@email.com");
+            data.setAuthor("Authro1");
+            data.setComment("Comment1");
+            data.setReturn("Return Data.");
+            process(sb, i, data);
+            TestUtils.testPerLine(
+                    sb.toString().replace("*", "").trim(),
+                    "Method 1",
+                    "",
+                    "Comment1",
+                    "- Author: Authro1",
+                    "- Author Email: Author1@email.com",
+                    "",
+                    "",
+                    "Return",
+                    "",
+                    "Return Data.");
+
+            sb = new StringBuilder();
+            data.setScope(ScopeType.PRIVATE);
+            process(sb, 1, data);
+            TestUtils.testPerLine(
+                    sb.toString().replace("*", "").trim(),
+                    "Method 1                                                         PRIVATE",
+                    "",
+                    "Comment1",
+                    "- Author: Authro1",
+                    "- Author Email: Author1@email.com",
+                    "",
+                    "",
+                    "Return",
+                    "",
+                    "Return Data.");
+
+        }
+    }
+
+    @Test
     /**
      * This dosen't test a whole lot other than make sure there are no run time
      * errors
@@ -205,6 +266,21 @@ class BashDocTextOutputTest extends BashDocTextOutput {
         final VariableData data = null;
         obj.process(sb, 0, data);
         assertEquals("", sb.toString());
+    }
+
+    @Test
+    void testProcessReturn() {
+        for (int i = 0; i < 6; i++) {
+            final StringBuilder sb = new StringBuilder();
+            obj.processReturn(sb, i, null);
+            assertEquals("", sb.toString());
+
+            obj.processReturn(sb, i, " ");
+            assertEquals("", sb.toString());
+
+            obj.processReturn(sb, i, "Test Return");
+            TestUtils.testPerLine(sb.toString().replace("*", "").trim(), "Return", "", "Test Return");
+        }
     }
 
 }

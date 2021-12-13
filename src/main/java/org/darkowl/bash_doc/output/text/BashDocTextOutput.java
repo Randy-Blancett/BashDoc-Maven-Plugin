@@ -179,7 +179,7 @@ public class BashDocTextOutput extends OutputFormatter {
 
     @Override
     protected void processReturn(final StringBuilder sb, final int indent, final String description) {
-        if (description == null || description.isEmpty())
+        if (description == null || description.isBlank())
             return;
         addHeader(sb, indent, "Return", null);
         outputLine(sb, indent, description);

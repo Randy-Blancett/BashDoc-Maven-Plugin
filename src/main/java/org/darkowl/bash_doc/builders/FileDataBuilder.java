@@ -55,13 +55,19 @@ public class FileDataBuilder {
         }
     }
 
-    private static String buildComment(final String currentComment, final String newComment) {
+    static String buildComment(final String currentComment, final String newComment) {
         final StringBuilder sb = new StringBuilder();
-        if (currentComment != null && !currentComment.isBlank())
-            sb.append(currentComment).append('\n');
+        boolean hasOld = false;
+        if (currentComment != null && !currentComment.isBlank()) {
+            sb.append(currentComment);
+            hasOld = true;
+        }
 
-        if (newComment != null && !newComment.isBlank())
+        if (newComment != null && !newComment.isBlank()) {
+            if (hasOld)
+                sb.append('\n');
             sb.append(newComment);
+        }
 
         return sb.toString();
 
@@ -138,13 +144,13 @@ public class FileDataBuilder {
         return output;
     }
 
-    private static boolean outputDefaultValue(final String defaultValue) {
+    static boolean outputDefaultValue(final String defaultValue) {
         if (defaultValue == null || defaultValue.isBlank() || defaultValue.equals("()"))
             return false;
         return true;
     }
 
-    private static void popStack(final Stack<StackObj<?>> stack, final LineTags lineType) {
+    static void popStack(final Stack<StackObj<?>> stack, final LineTags lineType) {
         if (stack == null || lineType == null)
             return;
         while (lineType.getLevel() <= stack.size())
