@@ -42,7 +42,7 @@ public class BashDocTextOutput extends OutputFormatter {
         if (key == null || value == null)
             return "";
         final StringBuilder output = new StringBuilder();
-        outputLine(output, indent, false, " -", key, ":", value);
+        outputLine(output, indent, false, " - ", key, ": ", value);
         return output.toString();
     }
 
@@ -60,17 +60,12 @@ public class BashDocTextOutput extends OutputFormatter {
         indentLine(output, indent);
         boolean hasOutput = false;
         for (final String item : data) {
-            if (item == null || item.isBlank())
+            if (item == null || (!processSpaces && item.isBlank()))
                 continue;
             String[] words;
-            if (processSpaces)
-                words = item.split("\\b");
-            else {
-                words = new String[1];
-                words[0] = item;
-            }
+            words = item.split("\\b");
             for (final String word : words) {
-                if (word == null || word.isBlank())
+                if (processSpaces && (word == null || word.isBlank()))
                     continue;
                 final String cleanWord = processSpaces ? word.trim() : word;
                 if (hasOutput && output.length() - start + cleanWord.length() + 1 > LINE_WIDTH) {
@@ -81,7 +76,7 @@ public class BashDocTextOutput extends OutputFormatter {
                     indentLine(output, indent + 1);
                     hasOutput = false;
                 }
-                if (hasOutput && Character.isLetterOrDigit(cleanWord.charAt(0)))
+                if (hasOutput && processSpaces && Character.isLetterOrDigit(cleanWord.charAt(0)))
                     output.append(' ');
                 output.append(cleanWord);
                 hasOutput = true;
@@ -141,7 +136,7 @@ public class BashDocTextOutput extends OutputFormatter {
                 indent,
                 false,
                 " ",
-                position == null ? "" : String.format("%02d -", position),
+                position == null ? "" : String.format("%02d - ", position),
                 padRight(name, 15),
                 description);
         return output.toString();

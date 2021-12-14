@@ -78,7 +78,7 @@ class BashDocTextOutputTest extends BashDocTextOutput {
             assertNull(obj.createParameterOutput(i, null, null, null));
             String data = obj.createParameterOutput(i, 1, null, null);
             assertEquals("01 -", data.trim());
-            assertEquals(i * 4 + 5, data.length());
+            assertEquals(i * 4 + 6, data.length());
 
             data = obj.createParameterOutput(i, null, "Test", null);
             assertEquals("Test", data.trim());
@@ -93,8 +93,8 @@ class BashDocTextOutputTest extends BashDocTextOutput {
             assertEquals(i * 4 + 21, data.length());
 
             data = obj.createParameterOutput(i, 1, "Test", "Some Test Data.");
-            assertEquals("01 - Test            Some Test Data.", data.trim());
-            assertEquals(i * 4 + 37, data.length());
+            assertEquals("01 - Test           Some Test Data.", data.trim());
+            assertEquals(i * 4 + 36, data.length());
         }
     }
 
@@ -131,6 +131,22 @@ class BashDocTextOutputTest extends BashDocTextOutput {
         assertEquals("The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the", testArray[0]);
         assertEquals("    lazy dog. the quick brown fox jumps over the lazy dog. there are some other", testArray[1]);
         assertEquals("    things to think about when doing this", testArray[2]);
+    }
+
+    @Test
+    void testOutputLine_Special_Ticket_29() {
+        final StringBuilder sb = new StringBuilder();
+        BashDocTextOutput.outputLine(
+                sb,
+                0,
+                false,
+                "01 - ",
+                "Flag ",
+                "     The Quick Brown fox jumps over the lazy dog.  The Quick brown fox jumps over the lazy dog.  The Quick Brown Fox Jumps over the Lazy Dog.");
+        final String[] testArray = sb.toString().split("\n");
+        assertEquals(2, testArray.length);
+        assertEquals("01 - Flag      The Quick Brown fox jumps over the lazy dog.  The Quick brown ", testArray[0]);
+        assertEquals("    fox jumps over the lazy dog.  The Quick Brown Fox Jumps over the Lazy Dog.", testArray[1]);
     }
 
     @Test

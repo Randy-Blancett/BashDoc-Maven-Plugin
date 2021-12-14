@@ -15,6 +15,25 @@ class ParameterDataProcessorTest {
     BashDocTextOutput obj = new BashDocTextOutput();
 
     @Test
+    void test_Ticket_29() {
+        StringBuilder sb = new StringBuilder();
+        List<ParameterData> data = new ArrayList<>();
+        ParameterData item = new ParameterData();
+        data.add(item);
+        item.setPosition(1);
+        item.setName("Flag");
+        item.setDescrtiption("This is the one character flag the parser will look for if there is no flag enter \"\"");
+
+        ParameterDataProcessor.process(obj, sb, 1, data);
+        TestUtils.testPerLine(
+                sb.toString().replace("*", "").trim(),
+                "Parameters",
+                "",
+                "01 - Flag           This is the one character flag the parser will look for",
+                "if there is no flag enter \"\"");
+    }
+
+    @Test
     void testProcessParameters() {
         for (int i = 0; i < 6; i++) {
             StringBuilder sb = new StringBuilder();
@@ -86,8 +105,8 @@ class ParameterDataProcessorTest {
                     sb.toString().replace("*", "").trim(),
                     "Parameters",
                     "",
-                    "01 - Var 1           Description",
-                    "02 - Var 2           Description2");
+                    "01 - Var 1          Description",
+                    "02 - Var 2          Description2");
         }
     }
 
