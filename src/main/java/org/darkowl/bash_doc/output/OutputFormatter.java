@@ -1,6 +1,7 @@
 package org.darkowl.bash_doc.output;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
 
@@ -12,9 +13,18 @@ import org.darkowl.bash_doc.model.VariableData;
 
 public abstract class OutputFormatter {
     private static final DateFormat dateFormater = DateFormat.getDateTimeInstance();
+    private final String fileExt;
+
     private Log log;
 
     private Path outputDir;
+
+    private final String subFolder;
+
+    protected OutputFormatter(final String subFolder, final String fileExt) {
+        this.fileExt = fileExt;
+        this.subFolder = subFolder;
+    }
 
     public void addHeader(final StringBuilder sb, final int i, final String string, final String createdString) {
     }
@@ -62,8 +72,10 @@ public abstract class OutputFormatter {
     }
 
     public void process(final Log log, final Path outputDir, final Library library) throws IOException {
-        this.outputDir = outputDir.resolve("text");
+        this.outputDir = outputDir.resolve(subFolder);
         this.log = log;
+        Files.createDirectories(getOutputDir());
+        process(library);
     }
 
     protected void process(final StringBuilder sb, final int i, final CommonCommentData commentData) {
@@ -86,7 +98,19 @@ public abstract class OutputFormatter {
     protected void processReturn(final StringBuilder sb, final int indent, final String description) {
     }
 
-    protected void writeFileData(final String replaceFirst, final byte[] bytes) {
+    protected void writeFileData(final String fileName, final byte[] content) {
+        final Path outputDir = getOutputDir();
+        if (outputDir == null)
+            return;
+        final String localFileName = fileName.replaceFirst("[.][^.]+$", "." + fileExt);
+        final Path filePath = outputDir.resolve(localFileName);
+        getLog().debug("Saving data to: " + filePath.toAbsolutePath());
+        try {
+            Files.write(filePath, content);
+        } catch (final IOException e) {
+            getLog().error("Failed to write text document", e);
+        }
+
     }
 
 }
