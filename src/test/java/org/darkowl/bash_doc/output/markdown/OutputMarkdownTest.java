@@ -39,7 +39,17 @@ class OutputMarkdownTest extends OutputMarkdown {
             assertEquals("", createCommentBlock(i, " "));
             TestUtils.testPerLine(createCommentBlock(i, "Hello 1"), "> Hello 1");
             TestUtils.testPerLine(createCommentBlock(i, "Hello 1\n    Hello 2"), "> Hello 1<br/>", "> Hello 2");
-            TestUtils.testPerLine(createCommentBlock(i, "Hello 1\n    Hello 2\n\n\n"), "> Hello 1<br/>", "> Hello 2");
+            TestUtils.testPerLine(createCommentBlock(i, "Hello 1\n\n    Hello 2\n\n"), "> Hello 1<br/>", "> Hello 2");
+        }
+    }
+
+    @Test
+    void testCreateExitCodeOutput() {
+        for (int i = 0; i < 6; i++) {
+            assertEquals("", createExitCodeOutput(i, null, null));
+            assertEquals("** 2** - <br/>\n", createExitCodeOutput(i, 2, null));
+            assertEquals("Description<br/>\n", createExitCodeOutput(i, null, "Description"));
+            assertEquals("** 2** - Description<br/>\n", createExitCodeOutput(i, 2, "Description"));
         }
     }
 
@@ -72,6 +82,17 @@ class OutputMarkdownTest extends OutputMarkdown {
             assertEquals("", createPropertyOutput(i, "Key", " "));
             assertEquals("* **Key**: Value\n", createPropertyOutput(i, "Key", "Value"));
 
+        }
+    }
+
+    @Test
+    void testOutputLine() {
+        for (int i = 0; i < 6; i++) {
+            final StringBuilder sb = new StringBuilder();
+            outputLine(sb, i, null, " ", " ");
+            assertEquals("", sb.toString());
+            outputLine(sb, i, "Hello  ", " World ");
+            assertEquals("*  Hello    World \n", sb.toString());
         }
     }
 

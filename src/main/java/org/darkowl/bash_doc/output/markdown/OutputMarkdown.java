@@ -61,6 +61,28 @@ public class OutputMarkdown extends OutputFormatter {
     }
 
     @Override
+    public String createExitCodeOutput(final int indent, final Integer code, final String description) {
+        if (code == null && description == null)
+            return "";
+        return (code == null ? "" : String.format("**%2d** - ", code)) + (description == null ? "" : description)
+                + "<br/>\n";
+    }
+
+    @Override
+    protected void outputLine(final StringBuilder output, final int indent, final String... data) {
+        final StringBuilder sb = new StringBuilder();
+        for (final String item : data) {
+            if (item == null || item.isBlank())
+                continue;
+            sb.append(' ');
+            sb.append(item);
+
+        }
+        if (sb.length() > 0)
+            output.append("* ").append(sb).append('\n');
+    }
+
+    @Override
     protected void process(final StringBuilder output, final int index, final CommonCommentData commentData) {
         if (commentData == null)
             return;
