@@ -37,9 +37,9 @@ class OutputMarkdownTest extends OutputMarkdown {
         for (int i = 0; i < 6; i++) {
             assertEquals("", createCommentBlock(i, null));
             assertEquals("", createCommentBlock(i, " "));
-            TestUtils.testPerLine(createCommentBlock(i, "Hello 1"), "> Hello 1");
-            TestUtils.testPerLine(createCommentBlock(i, "Hello 1\n    Hello 2"), "> Hello 1<br/>", "> Hello 2");
-            TestUtils.testPerLine(createCommentBlock(i, "Hello 1\n\n    Hello 2\n\n"), "> Hello 1<br/>", "> Hello 2");
+            TestUtils.testPerLine(createCommentBlock(i, "Hello 1"), "Hello 1");
+            TestUtils.testPerLine(createCommentBlock(i, "Hello 1\n    Hello 2"), "Hello 1<br/>", "Hello 2");
+            TestUtils.testPerLine(createCommentBlock(i, "Hello 1\n\n    Hello 2\n\n"), "Hello 1<br/>", "Hello 2");
         }
     }
 
@@ -110,19 +110,19 @@ class OutputMarkdownTest extends OutputMarkdown {
 
             data.setComment("Test Comment");
             process(sb, i, data);
-            assertEquals("> Test Comment", sb.toString().trim());
+            assertEquals("Test Comment", sb.toString().trim());
 
             sb = new StringBuilder();
             data.setAuthor("Author1");
             process(sb, i, data);
-            TestUtils.testPerLine(sb.toString(), "> Test Comment", "", "* **Author**: Author1");
+            TestUtils.testPerLine(sb.toString(), "Test Comment", "", "* **Author**: Author1");
 
             sb = new StringBuilder();
             data.setAuthorEmail("Author@email.com");
             process(sb, i, data);
             TestUtils.testPerLine(
                     sb.toString(),
-                    "> Test Comment",
+                    "Test Comment",
                     "",
                     "* **Author**: Author1",
                     "* **Author Email**: Author@email.com");

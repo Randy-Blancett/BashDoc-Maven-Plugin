@@ -1,6 +1,7 @@
 package org.darkowl.bash_doc.output.markdown;
 
 import org.darkowl.bash_doc.model.CommonCommentData;
+import org.darkowl.bash_doc.model.VariableData;
 import org.darkowl.bash_doc.output.OutputFormatter;
 
 public class OutputMarkdown extends OutputFormatter {
@@ -52,7 +53,7 @@ public class OutputMarkdown extends OutputFormatter {
                 continue;
             if (lineCount > 0)
                 output.append("<br/>\n");
-            output.append("> ").append(line.trim());
+            output.append(line.trim());
             lineCount++;
         }
         output.append("\n\n");
@@ -66,6 +67,27 @@ public class OutputMarkdown extends OutputFormatter {
             return "";
         return (code == null ? "" : String.format("**%2d** - ", code)) + (description == null ? "" : description)
                 + "<br/>\n";
+    }
+
+    @Override
+    protected void process(final StringBuilder output, final int index, final VariableData data) {
+        if (data == null)
+            return;
+        addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
+        process(output, index, (CommonCommentData) data);
+        output.append(createPropertyOutput(index, "Default Value", data.getDefault()));
+    }
+
+    @Override
+    protected String createParameterOutput(final int indent,
+            final Integer position,
+            final String name,
+            final String description) {
+        if (position == null && name == null && description == null)
+            return null;
+        final StringBuilder output = new StringBuilder();
+        outputLine(output, indent, position == null ? "" : String.format("%02d - ", position), name, description);
+        return output.toString();
     }
 
     @Override
