@@ -70,21 +70,12 @@ public class OutputMarkdown extends OutputFormatter {
     }
 
     @Override
-    protected void process(final StringBuilder output, final int index, final VariableData data) {
-        if (data == null)
-            return;
-        addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
-        process(output, index, (CommonCommentData) data);
-        output.append(createPropertyOutput(index, "Default Value", data.getDefault()));
-    }
-
-    @Override
     protected String createParameterOutput(final int indent,
             final Integer position,
             final String name,
             final String description) {
         if (position == null && name == null && description == null)
-            return null;
+            return "";
         final StringBuilder output = new StringBuilder();
         outputLine(output, indent, position == null ? "" : String.format("%02d - ", position), name, description);
         return output.toString();
@@ -111,6 +102,15 @@ public class OutputMarkdown extends OutputFormatter {
         output.append(createCommentBlock(index, commentData.getComment()))
                 .append(createPropertyOutput(index, "Author", commentData.getAuthor()))
                 .append(createPropertyOutput(index, "Author Email", commentData.getAuthorEmail()));
+    }
+
+    @Override
+    protected void process(final StringBuilder output, final int index, final VariableData data) {
+        if (data == null)
+            return;
+        addHeader(output, index, data.getName(), data.getScope() == null ? null : data.getScope().value());
+        process(output, index, (CommonCommentData) data);
+        output.append(createPropertyOutput(index, "Default Value", data.getDefault()));
     }
 
 }

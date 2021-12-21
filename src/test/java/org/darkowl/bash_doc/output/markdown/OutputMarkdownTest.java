@@ -14,6 +14,8 @@ import org.darkowl.bash_doc.builders.FileDataBuilder;
 import org.darkowl.bash_doc.model.CommonCommentData;
 import org.darkowl.bash_doc.model.FileData;
 import org.darkowl.bash_doc.model.Library;
+import org.darkowl.bash_doc.model.VariableData;
+import org.darkowl.bash_doc.model.VariableType;
 import org.junit.jupiter.api.Test;
 
 class OutputMarkdownTest extends OutputMarkdown {
@@ -73,6 +75,18 @@ class OutputMarkdownTest extends OutputMarkdown {
     }
 
     @Test
+    void testCreateParameterOutput() {
+        for (int i = 0; i < 6; i++) {
+            assertEquals("", createParameterOutput(i, null, null, null));
+            assertEquals("*  01 - \n", createParameterOutput(i, 1, null, null));
+            assertEquals("*  Name\n", createParameterOutput(i, null, "Name", null));
+            assertEquals("*  Description\n", createParameterOutput(i, null, null, "Description"));
+            assertEquals("*  01 -  Name Description\n", createParameterOutput(i, 1, "Name", "Description"));
+
+        }
+    }
+
+    @Test
     void testCreatePropertyOutput() {
         for (int i = 0; i < 6; i++) {
             assertEquals("", createPropertyOutput(i, null, null));
@@ -126,6 +140,47 @@ class OutputMarkdownTest extends OutputMarkdown {
                     "",
                     "* **Author**: Author1",
                     "* **Author Email**: Author@email.com");
+        }
+    }
+
+    @Test
+    void testProcess_VariableData() {
+
+        String expectedHead = "";
+        for (int i = 0; i < 6; i++) {
+            StringBuilder sb = new StringBuilder();
+            process(sb, i, (VariableData) null);
+            assertEquals("", sb.toString());
+            expectedHead += "#";
+
+            final VariableData data = new VariableData();
+
+            process(sb, i, data);
+            assertEquals("", sb.toString());
+
+            data.setComment("Test Comment");
+            process(sb, i, data);
+            assertEquals("Test Comment", sb.toString().trim());
+
+            sb = new StringBuilder();
+            data.setAuthor("Author1");
+            process(sb, i, data);
+            TestUtils.testPerLine(sb.toString(), "Test Comment", "", "* **Author**: Author1");
+
+            sb = new StringBuilder();
+            data.setAuthorEmail("Author@email.com");
+            data.setDefault("Hello World");
+            data.setName("Var1");
+            data.setType(VariableType.STRING);
+            process(sb, i, data);
+            TestUtils.testPerLine(
+                    sb.toString(),
+                    expectedHead + " Var1",
+                    "Test Comment",
+                    "",
+                    "* **Author**: Author1",
+                    "* **Author Email**: Author@email.com",
+                    "* **Default Value**: Hello World");
         }
     }
 }
