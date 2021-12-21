@@ -16,9 +16,9 @@ class ParameterDataProcessorTest {
 
     @Test
     void test_Ticket_29() {
-        StringBuilder sb = new StringBuilder();
-        List<ParameterData> data = new ArrayList<>();
-        ParameterData item = new ParameterData();
+        final StringBuilder sb = new StringBuilder();
+        final List<ParameterData> data = new ArrayList<>();
+        final ParameterData item = new ParameterData();
         data.add(item);
         item.setPosition(1);
         item.setName("Flag");

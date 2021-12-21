@@ -68,6 +68,20 @@ public class BashDocPluginTest {
     }
 
     @Test
+    public void testExecute_Markdown() throws Exception {
+        final BashDocPlugin plugin = new BashDocPlugin();
+        plugin.setSrcDirectory(Paths.get("target/bash"));
+        final Path outputDir = Paths.get(tempOutput.getAbsolutePath());
+        plugin.setOutputDirectory(outputDir);
+        plugin.setOutputMarkdown(true);
+        plugin.execute();
+        assertTrue(Files.exists(outputDir));
+        assertTrue(Files.exists(outputDir.resolve("markdown")));
+        assertTrue(Files.exists(outputDir.resolve("markdown").resolve("Test2.md")));
+        assertTrue(Files.exists(outputDir.resolve("markdown").resolve("Test1.md")));
+    }
+
+    @Test
     public void testExecute_RawXml() throws Exception {
         final BashDocPlugin plugin = new BashDocPlugin();
         final Path outputDir = Paths.get(tempOutput.getAbsolutePath());

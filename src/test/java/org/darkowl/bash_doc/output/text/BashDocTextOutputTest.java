@@ -134,22 +134,6 @@ class BashDocTextOutputTest extends BashDocTextOutput {
     }
 
     @Test
-    void testOutputLine_Special_Ticket_29() {
-        final StringBuilder sb = new StringBuilder();
-        BashDocTextOutput.outputLine(
-                sb,
-                0,
-                false,
-                "01 - ",
-                "Flag ",
-                "     The Quick Brown fox jumps over the lazy dog.  The Quick brown fox jumps over the lazy dog.  The Quick Brown Fox Jumps over the Lazy Dog.");
-        final String[] testArray = sb.toString().split("\n");
-        assertEquals(2, testArray.length);
-        assertEquals("01 - Flag      The Quick Brown fox jumps over the lazy dog.  The Quick brown ", testArray[0]);
-        assertEquals("    fox jumps over the lazy dog.  The Quick Brown Fox Jumps over the Lazy Dog.", testArray[1]);
-    }
-
-    @Test
     void testOutputLine_bug1() {
         final StringBuilder sb = new StringBuilder();
         obj.outputLine(
@@ -167,6 +151,22 @@ class BashDocTextOutputTest extends BashDocTextOutput {
         for (final String testItem : testArray)
             assertTrue(testItem.length() <= BashDocTextOutput.LINE_WIDTH);
         assertEquals("fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. the", testArray[0]);
+    }
+
+    @Test
+    void testOutputLine_Special_Ticket_29() {
+        final StringBuilder sb = new StringBuilder();
+        BashDocTextOutput.outputLine(
+                sb,
+                0,
+                false,
+                "01 - ",
+                "Flag ",
+                "     The Quick Brown fox jumps over the lazy dog.  The Quick brown fox jumps over the lazy dog.  The Quick Brown Fox Jumps over the Lazy Dog.");
+        final String[] testArray = sb.toString().split("\n");
+        assertEquals(2, testArray.length);
+        assertEquals("01 - Flag      The Quick Brown fox jumps over the lazy dog.  The Quick brown ", testArray[0]);
+        assertEquals("    fox jumps over the lazy dog.  The Quick Brown Fox Jumps over the Lazy Dog.", testArray[1]);
     }
 
     @Test

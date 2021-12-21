@@ -8,6 +8,10 @@ import org.junit.jupiter.api.Test;
 
 class OutputFormatterTest extends OutputFormatter {
 
+    protected OutputFormatterTest() {
+        super("test", "test");
+    }
+
     @Test
     void testAddHeader() {
         for (int i = 0; i < 6; i++) {
