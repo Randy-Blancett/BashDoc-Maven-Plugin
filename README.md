@@ -103,10 +103,12 @@ This indicates that a list of versions with notes about each will follow
 ## Version Log
 
 ### 1.3.0
-### ?????
+### 16Apr2023
 #### New Features
 - Add ability to document return data from a method
 - Fixed issues in how this handles non-text charators when formating lines
+- Split Return code form method Exit code
+- General Code quality cleanups
 
 ### 1.2.0
 ### 11NOV2021
@@ -131,4 +133,21 @@ This indicates that a list of versions with notes about each will follow
 
 #### Known Bugs
 - Issue with flatten pom plugin that won't allow nexus deploy
+
+# Developer Setup
+## Setup PGP Signature
+1) Install GnuPG
+    * ``` shell
+      sudo apt install gnupg
+      ```
+2) Generate a Key
+    * ``` shell
+      gpg --gen-key
+      ```
+## Release Artifact
+1) Cut Release
+    * ``` shell
+       mvn release:prepare
+       mvn release:perform
+      ```
 
