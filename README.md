@@ -109,6 +109,7 @@ This indicates that a list of versions with notes about each will follow
 - Fixed issues in how this handles non-text charators when formating lines
 - Split Return code form method Exit code
 - General Code quality cleanups
+- Added Markdown as an output Option
 
 ### 1.2.0
 ### 11NOV2021

@@ -15,6 +15,10 @@ import org.darkowl.bash_doc.output.OutputFormatter;
 
 public class OutputRawXml extends OutputFormatter {
 
+    public OutputRawXml() {
+        super("xml", "xml");
+    }
+
     @Override
     public void process(final Log log, final Path outputDir, final Library library) {
         try {

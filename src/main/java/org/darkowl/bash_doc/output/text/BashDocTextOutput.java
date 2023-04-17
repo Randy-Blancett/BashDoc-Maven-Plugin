@@ -1,12 +1,6 @@
 package org.darkowl.bash_doc.output.text;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import org.apache.maven.plugin.logging.Log;
 import org.darkowl.bash_doc.model.CommonCommentData;
-import org.darkowl.bash_doc.model.Library;
 import org.darkowl.bash_doc.model.VariableData;
 import org.darkowl.bash_doc.output.OutputFormatter;
 
@@ -60,7 +54,7 @@ public class BashDocTextOutput extends OutputFormatter {
         indentLine(output, indent);
         boolean hasOutput = false;
         for (final String item : data) {
-            if (item == null || (!processSpaces && item.isBlank()))
+            if (item == null || !processSpaces && item.isBlank())
                 continue;
             String[] words;
             words = item.split("\\b");
@@ -90,6 +84,10 @@ public class BashDocTextOutput extends OutputFormatter {
         while (output.length() < totalLength)
             output.append(' ');
         return output.toString();
+    }
+
+    public BashDocTextOutput() {
+        super("text", "txt");
     }
 
     @Override
@@ -148,13 +146,6 @@ public class BashDocTextOutput extends OutputFormatter {
     }
 
     @Override
-    public void process(final Log log, final Path outputDir, final Library library) throws IOException {
-        super.process(log, outputDir, library);
-        Files.createDirectories(getOutputDir());
-        process(library);
-    }
-
-    @Override
     protected void process(final StringBuilder output, final int index, final CommonCommentData commentData) {
         if (commentData == null)
             return;
@@ -180,16 +171,4 @@ public class BashDocTextOutput extends OutputFormatter {
         outputLine(sb, indent, description);
     }
 
-    @Override
-    protected void writeFileData(final String fileName, final byte[] content) {
-        final String localFileName = fileName.replaceFirst("[.][^.]+$", ".txt");
-        final Path filePath = getOutputDir().resolve(localFileName);
-        getLog().debug("Saving data to: " + filePath.toAbsolutePath());
-        try {
-            Files.write(filePath, content);
-        } catch (final IOException e) {
-            getLog().error("Failed to write text document", e);
-        }
-
-    }
 }
