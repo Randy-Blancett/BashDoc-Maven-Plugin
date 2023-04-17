@@ -27,6 +27,9 @@ public class BashDocPlugin extends AbstractMojo {
      */
     @Parameter(defaultValue = "${project.build.directory}/doc", property = "outputDir", required = true)
     private String outputDirectoryStr;
+    @Parameter(defaultValue = "true", property = "outputMarkdown", required = true)
+    private boolean outputMarkdown;
+
     @Parameter(defaultValue = "true", property = "outputRawXml", required = true)
     private boolean outputRawXml;
 
@@ -72,7 +75,14 @@ public class BashDocPlugin extends AbstractMojo {
             throw new MojoExecutionException(
                     "Failed to read source files from [" + srcDirectory.toAbsolutePath() + "].", e);
         }
-        OutputManager.init(Map.of(OutputType.RAW_XML, outputRawXml, OutputType.TEXT, outputText));
+        OutputManager.init(
+                Map.of(
+                        OutputType.RAW_XML,
+                        outputRawXml,
+                        OutputType.TEXT,
+                        outputText,
+                        OutputType.MARKDOWN,
+                        outputMarkdown));
         OutputManager.output(getLog(), outputDirectory, library);
     }
 
@@ -107,6 +117,10 @@ public class BashDocPlugin extends AbstractMojo {
 
     public void setOutputDirectory(final Path outputDirectory) {
         this.outputDirectory = outputDirectory;
+    }
+
+    public void setOutputMarkdown(final boolean outputMarkdown) {
+        this.outputMarkdown = outputMarkdown;
     }
 
     public void setOutputRawXml(final boolean outputRawXml) {
